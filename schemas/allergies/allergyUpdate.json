@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The name Schema",
+            "examples": [
+                "peanuts"
+            ]
+        },
+        "reaction": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "title": "The reaction Schema",
+            "examples": [
+                "analphylactic shock"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "SEVERE reaction- immediately develops airway compromise and difficulty breathing"
+            ]
+        }
+    },
+    "examples": [{
+        "name": "peanuts",
+        "reaction": "analphylactic shock",
+        "notes": "SEVERE reaction- immediately develops airway compromise and difficulty breathing"
+    }]
+}

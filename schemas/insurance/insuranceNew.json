@@ -1,0 +1,119 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "user_id",
+        "front_image_id",
+        "back_image_id",
+        "type"
+    ],
+    "properties": {
+        "user_id": {
+            "type": "integer",
+            "title": "The user_id Schema",
+            "examples": [
+                3
+            ]
+        },
+        "front_image_id": {
+            "type": "integer",
+            "title": "The front_image_id Schema",
+            "examples": [
+                18
+            ]
+        },
+        "back_image_id": {
+            "type": "integer",
+            "title": "The back_image_id Schema",
+            "examples": [
+                19
+            ]
+        },
+        "type": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The type Schema",
+            "examples": [
+                "medical"
+            ]
+        },
+        "start_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The start_date Schema",
+            "examples": [
+                "2024-01-28"
+            ]
+        },
+        "end_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The end_date Schema",
+            "examples": [
+                "2024-12-31"
+            ]
+        },
+        "insurance_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The insurance_name Schema",
+            "examples": [
+                "BCBS"
+            ]
+        },
+        "insured_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 75,
+            "title": "The insured_name Schema",
+            "examples": [
+                "John J. Smith"
+            ]
+        },
+        "group_num": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 25,
+            "title": "The group_num Schema",
+            "examples": [
+                "21413"
+            ]
+        },
+        "contract_num": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 25,
+            "title": "The contract_num Schema",
+            "examples": [
+                "DKJF991JK21IM"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "Insured through employer. Have to adjust benefits in November during open enrollment"
+            ]
+        }
+    },
+    "examples": [{
+        "user_id": 3,
+        "front_image_id": 18,
+        "back_image_id": 19,
+        "type": "medical",
+        "start_date": "2024-01-28",
+        "end_date": "2024-12-31",
+        "insurance_name": "BCBS",
+        "insured_name": "John J. Smith",
+        "group_num": "21413",
+        "contract_num": "DKJF991JK21IM",
+        "notes": "Insured through employer. Have to adjust benefits in November during open enrollment"
+    }]
+}

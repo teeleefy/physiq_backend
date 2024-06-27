@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [],
+    "properties": {
+        "prescriber_id": {
+            "type": "integer",
+            "title": "The prescriber_id Schema",
+            "examples": [
+                8
+            ]
+        },
+        "name": {
+            "type": "string",
+           "minLength": 2,
+            "maxLength": 100,
+            "title": "The name Schema",
+            "examples": [
+                "Pantoprazole"
+            ]
+        },
+        "start_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The start_date Schema",
+            "examples": [
+                "2024-04-28"
+            ]
+        },
+        "end_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The end_date Schema",
+            "examples": [
+                "2024-10-28"
+            ]
+        },
+        "indication": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "title": "The indication Schema",
+            "examples": [
+                "Reoccuring heartburn post colon resection."
+            ]
+        },
+        "dose": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "title": "The dose Schema",
+            "examples": [
+                "40mg oral twice daily"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "Take before breakfast and dinner every day for six months. Might cause dry mouth."
+            ]
+        }
+    },
+    "examples": [{
+        "user_id": 3,
+        "prescriber_id": 8,
+        "name": "Pantoprazole",
+        "start_date": "2024-04-28",
+        "end_date": "2024-10-28",
+        "indication": "Reoccuring heartburn post colon resection.",
+        "dose": "40mg oral twice daily",
+        "notes": "Take before breakfast and dinner every day for six months. Might cause dry mouth."
+    }]
+}

@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "path"
+    ],
+    "properties": {
+        "path": {
+            "type": "string",
+            "title": "The path Schema",
+            "examples": [
+                "this/is/the/path/to/the/image/you/need"
+            ]
+        }
+    },
+    "examples": [{
+        "path": "this/is/the/path/to/the/image/you/need"
+    }]
+}

@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "user_id",
+        "title"
+    ],
+    "properties": {
+        "user_id": {
+            "type": "integer",
+            "title": "The user_id Schema",
+            "examples": [
+                3
+            ]
+        },
+        "doctor_id": {
+            "type": "integer",
+            "title": "The doctor_id Schema",
+            "examples": [
+                8
+            ]
+        },
+        "title": {
+            "type": "string",
+            "title": "The title Schema",
+            "minLength": 2,
+            "maxLength": 50,
+            "examples": [
+                "Yearly Check-up"
+            ]
+        },
+        "date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The date Schema",
+            "examples": [
+                "2024-04-28"
+            ]
+        },
+        "description": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250,
+            "title": "The description Schema",
+            "examples": [
+                "Saw him for hypertension and racing heart rate."
+            ]
+        }
+    },
+    "examples": [{
+        "user_id": 3,
+        "doctor_id": 8,
+        "title": "Yearly Check-up",
+        "date": "2024-04-28",
+        "description": "Saw him for hypertension and racing heart rate."
+    }]
+}

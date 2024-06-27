@@ -1,0 +1,84 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "user_id",
+        "name",
+        "specialty"
+    ],
+    "properties": {
+        "user_id": {
+            "type": "integer",
+            "title": "The user_id Schema",
+            "examples": [
+                3
+            ]
+        },
+        "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The name Schema",
+            "examples": [
+                "Dr. Patel"
+            ]
+        },
+        "specialty": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The specialty Schema",
+            "examples": [
+                "Cardiology"
+            ]
+        },
+        "clinic": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The clinic Schema",
+            "examples": [
+                "Main Street Cardiology"
+            ]
+        },
+        "address": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "title": "The address Schema",
+            "examples": [
+                "4300 Main Street, Townville, ST"
+            ]
+        },
+        "phone": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 25,
+            "title": "The phone Schema",
+            "examples": [
+                "(111) 222-3333 ext. 431"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "See him for hypertension and racing heart rate."
+            ]
+        }
+    },
+    "examples": [{
+        "user_id": 3,
+        "name": "Dr. Patel",
+        "specialty": "Cardiology",
+        "clinic": "Main Street Cardiology",
+        "address": "4300 Main Street, Townville, ST",
+        "phone": "(111) 222-3333 ext. 431",
+        "notes": "See him for hypertension and racing heart rate."
+    }]
+}

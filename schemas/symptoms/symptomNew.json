@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "user_id",
+        "name"
+    ],
+    "properties": {
+        "user_id": {
+            "type": "integer",
+            "title": "The user_id Schema",
+            "examples": [
+                3
+            ]
+        },
+        "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The name Schema",
+            "examples": [
+                "Migraines"
+            ]
+        },
+        "start_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The start_date Schema",
+            "examples": [
+                "2024-03-02"
+            ]
+        },
+        "end_date": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The end_date Schema",
+            "examples": [
+                "2024-05-02"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "Worsened by poor sleep and stress. Need to make appointment with doctor for migraine medicine."
+            ]
+        }
+    },
+    "examples": [{
+        "user_id": 3,
+        "name": "Migraines",
+        "start_date": "2024-03-02",
+        "end_date": "2024-05-02",
+        "notes": "Worsened by poor sleep and stress. Need to make appointment with doctor for migraine medicine."
+    }]
+}

@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "title": "The name Schema",
+            "examples": [
+                "Congestive Heart Failure"
+            ]
+        },
+        "date_received": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "The date_received Schema",
+            "examples": [
+                "2023-02-02"
+            ]
+        },
+        "notes": {
+            "type": "string",
+            "maxLength": 250,
+            "title": "The notes Schema",
+            "examples": [
+                "Worsened by high-sodium diet and too many fluids. Found by ultrasound and lab results."
+            ]
+        }
+    }
+}

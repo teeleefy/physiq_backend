@@ -1,6 +1,6 @@
 CREATE TABLE families (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(35) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   email TEXT NOT NULL
     CHECK (position('@' IN email) > 1),
   password TEXT NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE insurance (
     user_id INTEGER NOT NULL
         REFERENCES users ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
-    company_name VARCHAR(50) NOT NULL,
+    insurance_name VARCHAR(50) NOT NULL,
     insured_name VARCHAR(75) NOT NULL,
     start_date DATE,
     end_date DATE,

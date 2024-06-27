@@ -37,7 +37,7 @@
         },
         "birthday": {
             "type": "string",
-            "default": "",
+            "maxLength": 10,
             "title": "The birthday Schema",
             "examples": [
                 "2010-01-01"

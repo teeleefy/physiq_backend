@@ -71,10 +71,10 @@ CREATE TABLE meds (
     user_id INTEGER NOT NULL
         REFERENCES users ON DELETE CASCADE,
     prescriber_id INTEGER REFERENCES doctors ON DELETE CASCADE,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     start_date DATE,
     end_date DATE,
-    indication VARCHAR(50),
+    indication VARCHAR(100),
     dose VARCHAR(100),
     notes VARCHAR (250) 
 );

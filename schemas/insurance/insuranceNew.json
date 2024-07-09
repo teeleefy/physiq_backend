@@ -5,15 +5,15 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "user_id",
+        "member_id",
         "front_image_id",
         "back_image_id",
         "type"
     ],
     "properties": {
-        "user_id": {
+        "member_id": {
             "type": "integer",
-            "title": "The user_id Schema",
+            "title": "The member_id Schema",
             "examples": [
                 3
             ]
@@ -104,7 +104,7 @@
         }
     },
     "examples": [{
-        "user_id": 3,
+        "member_id": 3,
         "front_image_id": 18,
         "back_image_id": 19,
         "type": "medical",

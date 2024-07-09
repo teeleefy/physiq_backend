@@ -5,14 +5,14 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "user_id",
+        "member_id",
         "name",
         "reaction"
     ],
     "properties": {
-        "user_id": {
+        "member_id": {
             "type": "integer",
-            "title": "The user_id Schema",
+            "title": "The member_id Schema",
             "examples": [
                 3
             ]
@@ -46,7 +46,7 @@
         }
     },
     "examples": [{
-        "user_id": 3,
+        "member_id": 3,
         "name": "peanuts",
         "reaction": "analphylactic shock",
         "notes": "SEVERE reaction- immediately develops airway compromise and difficulty breathing"

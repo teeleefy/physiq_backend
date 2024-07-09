@@ -1,13 +1,13 @@
 CREATE TABLE families (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
+  name VARCHAR(50) NOT NULL UNIQUE,
   email TEXT NOT NULL
     CHECK (position('@' IN email) > 1),
   password TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE users (
+CREATE TABLE family_members (
     id SERIAL PRIMARY KEY, 
    family_id INTEGER NOT NULL
         REFERENCES families ON DELETE CASCADE,
@@ -20,15 +20,15 @@ CREATE TABLE allergies (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     reaction VARCHAR(100) NOT NULL,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     notes VARCHAR (250) 
 );
 
 CREATE TABLE symptoms (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     name VARCHAR(50) NOT NULL,
     start_date DATE,
     end_date DATE,
@@ -37,8 +37,8 @@ CREATE TABLE symptoms (
 
 CREATE TABLE doctors (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     name VARCHAR(50) NOT NULL,
     specialty VARCHAR(50) NOT NULL,
     clinic VARCHAR(50),
@@ -49,8 +49,8 @@ CREATE TABLE doctors (
 
 CREATE TABLE diagnoses (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     name VARCHAR(50) NOT NULL,
     date_received DATE,
     notes VARCHAR (250) 
@@ -58,8 +58,8 @@ CREATE TABLE diagnoses (
 
 CREATE TABLE visits (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     doctor_id INTEGER REFERENCES doctors ON DELETE CASCADE,
     title VARCHAR(50) NOT NULL,
     date DATE,
@@ -68,8 +68,8 @@ CREATE TABLE visits (
 
 CREATE TABLE meds (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     prescriber_id INTEGER REFERENCES doctors ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     start_date DATE,
@@ -81,17 +81,17 @@ CREATE TABLE meds (
 
 CREATE TABLE images (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     path TEXT NOT NULL
 );
 
 CREATE TABLE insurance (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL
-        REFERENCES users ON DELETE CASCADE,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
-    insurance_name VARCHAR(50) NOT NULL,
+    company_name VARCHAR(50) NOT NULL,
     insured_name VARCHAR(75) NOT NULL,
     start_date DATE,
     end_date DATE,
@@ -104,5 +104,11 @@ CREATE TABLE insurance (
         REFERENCES images ON DELETE CASCADE
 );
 
-
+CREATE TABLE goals (
+    id SERIAL PRIMARY KEY,
+    member_id INTEGER NOT NULL
+        REFERENCES family_members ON DELETE CASCADE,
+    goal_name VARCHAR(100) NOT NULL,
+    goal_details VARCHAR(150)
+);
 

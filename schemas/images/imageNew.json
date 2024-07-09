@@ -5,13 +5,13 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "user_id",
+        "member_id",
         "path"
     ],
     "properties": {
-        "user_id": {
+        "member_id": {
             "type": "integer",
-            "title": "The user_id Schema",
+            "title": "The member_id Schema",
             "examples": [
                 3
             ]
@@ -25,7 +25,7 @@
         }
     },
     "examples": [{
-        "user_id": 3,
+        "member_id": 3,
         "path": "this/is/the/path/to/the/image/you/need"
     }]
 }

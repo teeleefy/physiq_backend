@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Goal Schema",
+    "required": [
+        "member_id",
+        "goal_name"
+    ],
+    "properties": {
+        "member_id": {
+            "type": "integer",
+            "title": "The member_id Schema",
+            "examples": [
+                3
+            ]
+        },
+        "goal_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "title": "The goal_name Schema",
+            "examples": [
+                "Make dentist appointment"
+            ]
+        },
+        "goal_details": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "The goal_details Schema",
+            "examples": [
+                "Need to make appointment by end of July. Would like to get a cleaning before end of September."
+            ]
+        }
+    },
+    "examples": [{
+        "member_id": 3,
+        "goal_name": "Make dentist appointment",
+        "goal_details": "Need to make appointment by end of July. Would like to get a cleaning before end of September."
+    }]
+}

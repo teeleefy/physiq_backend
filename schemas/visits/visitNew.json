@@ -5,13 +5,13 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "user_id",
+        "member_id",
         "title"
     ],
     "properties": {
-        "user_id": {
+        "member_id": {
             "type": "integer",
-            "title": "The user_id Schema",
+            "title": "The member_id Schema",
             "examples": [
                 3
             ]
@@ -51,7 +51,7 @@
         }
     },
     "examples": [{
-        "user_id": 3,
+        "member_id": 3,
         "doctor_id": 8,
         "title": "Yearly Check-up",
         "date": "2024-04-28",

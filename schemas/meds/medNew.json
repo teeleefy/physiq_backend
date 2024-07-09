@@ -5,13 +5,13 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "user_id",
+        "member_id",
         "name"
     ],
     "properties": {
-        "user_id": {
+        "member_id": {
             "type": "integer",
-            "title": "The user_id Schema",
+            "title": "The member_id Schema",
             "examples": [
                 3
             ]
@@ -77,7 +77,7 @@
         }
     },
     "examples": [{
-        "user_id": 3,
+        "member_id": 3,
         "prescriber_id": 8,
         "name": "Pantoprazole",
         "start_date": "2024-04-28",

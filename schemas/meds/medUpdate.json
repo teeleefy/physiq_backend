@@ -67,7 +67,6 @@
         }
     },
     "examples": [{
-        "user_id": 3,
         "prescriber_id": 8,
         "name": "Pantoprazole",
         "start_date": "2024-04-28",

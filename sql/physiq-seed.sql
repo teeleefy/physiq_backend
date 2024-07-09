@@ -10,7 +10,7 @@ INSERT INTO families (name, email, password, is_admin)
             TRUE
             );
 
-INSERT INTO users (family_id, first_name, last_name, birthday) 
+INSERT INTO family_members (family_id, first_name, last_name, birthday) 
     VALUES (1, 
             'John', 
             'Smith',
@@ -32,7 +32,7 @@ INSERT INTO users (family_id, first_name, last_name, birthday)
             '1970-3-19'
             );
 
-INSERT INTO allergies (user_id, name, reaction, notes) 
+INSERT INTO allergies (member_id, name, reaction, notes) 
     VALUES (1, 
             'peanut', 
             'anaphylactic shock',
@@ -49,7 +49,7 @@ INSERT INTO allergies (user_id, name, reaction, notes)
             );
 
 
-INSERT INTO allergies (user_id, name, reaction) 
+INSERT INTO allergies (member_id, name, reaction) 
     VALUES (2, 
             'seasonal',
             'stuffy nose and sneezing, watery eyes'
@@ -58,7 +58,7 @@ INSERT INTO allergies (user_id, name, reaction)
             'cats', 
             'stuffy nose and sneezing');
 
-INSERT INTO symptoms (user_id, name, start_date, end_date, notes) 
+INSERT INTO symptoms (member_id, name, start_date, end_date, notes) 
     VALUES (1, 
             'hip pain',
             '2008-01-01',
@@ -66,7 +66,7 @@ INSERT INTO symptoms (user_id, name, start_date, end_date, notes)
             'Possibly caused by football injury in high school. Resolved by hip surgery in 2020.'
             );
 
-INSERT INTO symptoms (user_id, name, start_date, notes) 
+INSERT INTO symptoms (member_id, name, start_date, notes) 
     VALUES (2, 
             'migraines',
             '2024-05-01',
@@ -83,7 +83,7 @@ INSERT INTO symptoms (user_id, name, start_date, notes)
             'Mouth ulcer. Need to get some oragel for pain.'
             );
 
-INSERT INTO doctors (user_id, name, specialty, clinic, address, phone, notes)
+INSERT INTO doctors (member_id, name, specialty, clinic, address, phone, notes)
     VALUES (1,
             'Dr. Katz',
             'Medical- GI Doctor',
@@ -117,7 +117,7 @@ INSERT INTO doctors (user_id, name, specialty, clinic, address, phone, notes)
             'Seen for yearly eye exams since 2023'
             ); 
 
-INSERT INTO diagnoses (user_id, name, date_received, notes)
+INSERT INTO diagnoses (member_id, name, date_received, notes)
     VALUES (1,
             'diverticulitis',
             '2021-05-15',
@@ -139,7 +139,7 @@ INSERT INTO diagnoses (user_id, name, date_received, notes)
             'Found after having lots of headaches. Started blood pressure medications that helped.'
             ); 
 
-INSERT INTO visits (user_id, doctor_id, title, date, description)
+INSERT INTO visits (member_id, doctor_id, title, date, description)
     VALUES (1,
             1,
             'Follow-up visit after colon-resection surgery',
@@ -165,7 +165,7 @@ INSERT INTO visits (user_id, doctor_id, title, date, description)
             'Dr. Miguel said eyes look good. Just to wear reading glasses when I read if things look blurry.'
             ); 
 
-INSERT INTO meds (user_id, prescriber_id, name, start_date, end_date, indication, dose, notes)
+INSERT INTO meds (member_id, prescriber_id, name, start_date, end_date, indication, dose, notes)
     VALUES (1,
             1,
             'pantoprazole',
@@ -176,7 +176,7 @@ INSERT INTO meds (user_id, prescriber_id, name, start_date, end_date, indication
             'Take with food and a glass of water. Supposed to take for six months.'  
              );
 
-INSERT INTO meds (user_id, prescriber_id, name, start_date, indication, dose, notes)
+INSERT INTO meds (member_id, prescriber_id, name, start_date, indication, dose, notes)
     VALUES (2,
             2,
             'claritin',
@@ -202,7 +202,7 @@ INSERT INTO meds (user_id, prescriber_id, name, start_date, indication, dose, no
             'Take daily at bedtime.' 
              ); 
 
-INSERT INTO images (user_id, path)
+INSERT INTO images (member_id, path)
     VALUES (1,
             'https://www.medicareinteractive.org/images/medicarecard.jpg'
              ),
@@ -228,7 +228,7 @@ INSERT INTO images (user_id, path)
             'https://www.bcbsnd.com/content/dam/bcbsnd/images/general/providers/back-of-card-3.jpg'
              ); 
 
-INSERT INTO insurance (user_id, type, company_name, insured_name, start_date, end_date, group_num, contract_num, notes, front_image_id, back_image_id)
+INSERT INTO insurance (member_id, type, company_name, insured_name, start_date, end_date, group_num, contract_num, notes, front_image_id, back_image_id)
     VALUES (1,
             'medical',
             'Medicare',
@@ -278,7 +278,19 @@ INSERT INTO insurance (user_id, type, company_name, insured_name, start_date, en
               8
              );
 
-
+INSERT INTO goals (member_id, goal_name, goal_details)
+    VALUES (1, 
+            'Make dentist appointment', 
+            'Need to make appointment by end of July. Would like to get a cleaning before end of September.'),
+            (2, 
+            'Finish all antibiotics for strept throat.', 
+            'Have 3 week prescription. Need to take twice a day.'),
+            (3, 
+            'Find a new primary.', 
+            'Need to compare primaries and see which one takes my insurance and set up appointment.'),
+            (4, 
+            'Pay my dentist bill', 
+            'Owe money from last visit about braces. Bill is due by end of month.');
 
 
 

@@ -1,31 +1,55 @@
 "use strict";
 
-/** Express app for jobly. */
+/** Express app for physiq. */
 
+//NECESSARY IMPORTS FOR APP, MIDDLEWARE, AND ERROR HANDLING
 const express = require("express");
 const cors = require("cors");
-
 const { NotFoundError } = require("./expressError");
+const { authenticateJWT } = require("./middleware/auth.js");
 
-// const { authenticateJWT } = require("./middleware/auth");
-// const authRoutes = require("./routes/auth");
-// const companiesRoutes = require("./routes/companies");
-// const usersRoutes = require("./routes/users");
-// const jobsRoutes = require("./routes/jobs");
+//CONNECT TO ROUTES FILES
+const familiesRoutes = require("./routes/families/families");
+const authRoutes = require("./routes/auth/auth");
+const membersRoutes = require("./routes/members/members");
+const allergiesRoutes = require("./routes/allergies/allergies");
+const diagnosesRoutes = require("./routes/diagnoses/diagnoses");
+const doctorsRoutes = require("./routes/doctors/doctors");
+const goalsRoutes = require("./routes/goals/goals");
+const imagesRoutes = require("./routes/images/images");
+const insuranceRoutes = require("./routes/insurance/insurance");
+const medsRoutes = require("./routes/meds/meds");
+const symptomsRoutes = require("./routes/symptoms/symptoms");
+const visitsRoutes = require("./routes/visits/visits");
 
+
+//CONNECT TO MORGAN LIBRARY FOR DETAILED BACKEND INFORMATION
 const morgan = require("morgan");
 
+//MAKE EXPRESS APP
 const app = express();
 
+//USE MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
-// app.use(authenticateJWT);
+app.use(authenticateJWT);
 
-// app.use("/auth", authRoutes);
-// app.use("/companies", companiesRoutes);
-// app.use("/users", usersRoutes);
-// app.use("/jobs", jobsRoutes);
+
+//URL ROUTE NAMES
+
+app.use("/families", familiesRoutes);
+app.use("/auth", authRoutes);
+app.use("/members", membersRoutes);
+app.use("/allergies", allergiesRoutes);
+app.use("/diagnoses", diagnosesRoutes);
+app.use("/doctors", doctorsRoutes);
+app.use("/goals", goalsRoutes);
+app.use("/images", imagesRoutes);
+app.use("/insurance", insuranceRoutes);
+app.use("/meds", medsRoutes);
+app.use("/symptoms", symptomsRoutes);
+app.use("/visits", visitsRoutes);
 
 
 /** Handle 404 errors -- this matches everything */

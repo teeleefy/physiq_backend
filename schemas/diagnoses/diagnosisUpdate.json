@@ -15,10 +15,10 @@
                 "Congestive Heart Failure"
             ]
         },
-        "date_received": {
+        "dateReceived": {
             "type": "string",
             "maxLength": 10,
-            "title": "The date_received Schema",
+            "title": "The dateReceived Schema",
             "examples": [
                 "2023-02-02"
             ]

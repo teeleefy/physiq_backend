@@ -5,29 +5,29 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "member_id",
-        "front_image_id",
-        "back_image_id",
+        "memberId",
+        "frontImageId",
+        "backImageId",
         "type"
     ],
     "properties": {
-        "member_id": {
+        "memberId": {
             "type": "integer",
-            "title": "The member_id Schema",
+            "title": "The memberId Schema",
             "examples": [
                 3
             ]
         },
-        "front_image_id": {
+        "frontImageId": {
             "type": "integer",
-            "title": "The front_image_id Schema",
+            "title": "The frontImageId Schema",
             "examples": [
                 18
             ]
         },
-        "back_image_id": {
+        "backImageId": {
             "type": "integer",
-            "title": "The back_image_id Schema",
+            "title": "The backImageId Schema",
             "examples": [
                 19
             ]
@@ -41,54 +41,54 @@
                 "medical"
             ]
         },
-        "start_date": {
+        "startDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The start_date Schema",
+            "title": "The startDate Schema",
             "examples": [
                 "2024-01-28"
             ]
         },
-        "end_date": {
+        "endDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The end_date Schema",
+            "title": "The endDate Schema",
             "examples": [
                 "2024-12-31"
             ]
         },
-        "insurance_name": {
+        "insuranceName": {
             "type": "string",
             "minLength": 2,
             "maxLength": 50,
-            "title": "The insurance_name Schema",
+            "title": "The insuranceName Schema",
             "examples": [
                 "BCBS"
             ]
         },
-        "insured_name": {
+        "insuredName": {
             "type": "string",
             "minLength": 2,
             "maxLength": 75,
-            "title": "The insured_name Schema",
+            "title": "The insuredName Schema",
             "examples": [
                 "John J. Smith"
             ]
         },
-        "group_num": {
+        "groupNum": {
             "type": "string",
             "minLength": 2,
             "maxLength": 25,
-            "title": "The group_num Schema",
+            "title": "The groupNum Schema",
             "examples": [
                 "21413"
             ]
         },
-        "contract_num": {
+        "contractNum": {
             "type": "string",
             "minLength": 2,
             "maxLength": 25,
-            "title": "The contract_num Schema",
+            "title": "The contractNum Schema",
             "examples": [
                 "DKJF991JK21IM"
             ]
@@ -104,16 +104,16 @@
         }
     },
     "examples": [{
-        "member_id": 3,
-        "front_image_id": 18,
-        "back_image_id": 19,
+        "memberId": 3,
+        "frontImageId": 18,
+        "backImageId": 19,
         "type": "medical",
-        "start_date": "2024-01-28",
-        "end_date": "2024-12-31",
-        "insurance_name": "BCBS",
-        "insured_name": "John J. Smith",
-        "group_num": "21413",
-        "contract_num": "DKJF991JK21IM",
+        "startDate": "2024-01-28",
+        "endDate": "2024-12-31",
+        "insuranceName": "BCBS",
+        "insuredName": "John J. Smith",
+        "groupNum": "21413",
+        "contractNum": "DKJF991JK21IM",
         "notes": "Insured through employer. Have to adjust benefits in November during open enrollment"
     }]
 }

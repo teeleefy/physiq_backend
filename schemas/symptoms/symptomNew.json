@@ -5,13 +5,13 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "member_id",
+        "memberId",
         "name"
     ],
     "properties": {
-        "member_id": {
+        "memberId": {
             "type": "integer",
-            "title": "The member_id Schema",
+            "title": "The memberId Schema",
             "examples": [
                 3
             ]
@@ -25,18 +25,18 @@
                 "Migraines"
             ]
         },
-        "start_date": {
+        "startDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The start_date Schema",
+            "title": "The startDate Schema",
             "examples": [
                 "2024-03-02"
             ]
         },
-        "end_date": {
+        "endDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The end_date Schema",
+            "title": "The endDate Schema",
             "examples": [
                 "2024-05-02"
             ]
@@ -51,10 +51,10 @@
         }
     },
     "examples": [{
-        "member_id": 3,
+        "memberId": 3,
         "name": "Migraines",
-        "start_date": "2024-03-02",
-        "end_date": "2024-05-02",
+        "startDate": "2024-03-02",
+        "endDate": "2024-05-02",
         "notes": "Worsened by poor sleep and stress. Need to make appointment with doctor for migraine medicine."
     }]
 }

@@ -5,38 +5,38 @@
     "default": {},
     "title": "Goal Schema",
     "required": [
-        "member_id",
-        "goal_name"
+        "memberId",
+        "goalName"
     ],
     "properties": {
-        "member_id": {
+        "memberId": {
             "type": "integer",
-            "title": "The member_id Schema",
+            "title": "The memberId Schema",
             "examples": [
                 3
             ]
         },
-        "goal_name": {
+        "goalName": {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "title": "The goal_name Schema",
+            "title": "The goalName Schema",
             "examples": [
                 "Make dentist appointment"
             ]
         },
-        "goal_details": {
+        "goalDetails": {
             "type": "string",
             "maxLength": 150,
-            "title": "The goal_details Schema",
+            "title": "The goalDetails Schema",
             "examples": [
                 "Need to make appointment by end of July. Would like to get a cleaning before end of September."
             ]
         }
     },
     "examples": [{
-        "member_id": 3,
-        "goal_name": "Make dentist appointment",
-        "goal_details": "Need to make appointment by end of July. Would like to get a cleaning before end of September."
+        "memberId": 3,
+        "goalName": "Make dentist appointment",
+        "goalDetails": "Need to make appointment by end of July. Would like to get a cleaning before end of September."
     }]
 }

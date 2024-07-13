@@ -5,20 +5,20 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "member_id",
+        "memberId",
         "title"
     ],
     "properties": {
-        "member_id": {
+        "memberId": {
             "type": "integer",
-            "title": "The member_id Schema",
+            "title": "The memberId Schema",
             "examples": [
                 3
             ]
         },
-        "doctor_id": {
+        "doctorId": {
             "type": "integer",
-            "title": "The doctor_id Schema",
+            "title": "The doctorId Schema",
             "examples": [
                 8
             ]
@@ -51,8 +51,8 @@
         }
     },
     "examples": [{
-        "member_id": 3,
-        "doctor_id": 8,
+        "memberId": 3,
+        "doctorId": 8,
         "title": "Yearly Check-up",
         "date": "2024-04-28",
         "description": "Saw him for hypertension and racing heart rate."

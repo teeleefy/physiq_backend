@@ -38,10 +38,10 @@
                 "jklfjdasj88938sfa"
             ]
         },
-        "is_admin": {
+        "isAdmin": {
             "type": "boolean",
             "default": false,
-            "title": "The is_admin Schema",
+            "title": "The isAdmin Schema",
             "examples": [
                 false
             ]
@@ -51,6 +51,6 @@
         "name": "The Smith Family",
         "email": "email@email.com",
         "password": "jklfjdasj88938sfa",
-        "is_admin": false
+        "isAdmin": false
     }]
 }

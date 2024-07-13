@@ -1,7 +1,7 @@
 CREATE TABLE families (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE,
-  email TEXT NOT NULL
+  name VARCHAR(50) NOT NULL,
+  email TEXT NOT NULL UNIQUE
     CHECK (position('@' IN email) > 1),
   password TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL DEFAULT FALSE

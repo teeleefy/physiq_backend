@@ -4,40 +4,28 @@
     "type": "object",
     "default": {},
     "title": "Root Schema",
-    "required": [
-        "family_id",
-        "first_name",
-        "last_name"
-    ],
+    "required": [],
     "properties": {
-        "family_id": {
-            "type": "integer",
-            "title": "The family_id Schema",
-            "examples": [
-                3
-            ]
-        },
-        "first_name": {
+        "firstName": {
             "type": "string",
-            "title": "The first_name Schema",
+            "title": "The firstName Schema",
             "minLength": 2,
             "maxLength": 35,
             "examples": [
                 "John"
             ]
         },
-        "last_name": {
+        "lastName": {
             "type": "string",
             "minLength": 2,
             "maxLength": 35,
-            "title": "The last_name Schema",
+            "title": "The lastName Schema",
             "examples": [
                 "Smith"
             ]
         },
         "birthday": {
             "type": "string",
-            "maxLength": 10,
             "title": "The birthday Schema",
             "examples": [
                 "2010-01-01"
@@ -45,9 +33,8 @@
         }
     },
     "examples": [{
-        "family_id": 3,
-        "first_name": "John",
-        "last_name": "Smith",
+        "firstName": "John",
+        "lastName": "Smith",
         "birthday": "2010-01-01"
     }]
 }

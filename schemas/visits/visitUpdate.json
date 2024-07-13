@@ -6,9 +6,9 @@
     "title": "Root Schema",
     "required": [],
     "properties": {
-        "doctor_id": {
+        "doctorId": {
             "type": "integer",
-            "title": "The doctor_id Schema",
+            "title": "The doctorId Schema",
             "examples": [
                 8
             ]
@@ -41,7 +41,7 @@
         }
     },
     "examples": [{
-        "doctor_id": 8,
+        "doctorId": 8,
         "title": "Yearly Check-up",
         "date": "2024-04-28",
         "description": "Saw him for hypertension and racing heart rate."

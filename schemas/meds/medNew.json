@@ -5,20 +5,20 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "member_id",
+        "memberId",
         "name"
     ],
     "properties": {
-        "member_id": {
+        "memberId": {
             "type": "integer",
-            "title": "The member_id Schema",
+            "title": "The memberId Schema",
             "examples": [
                 3
             ]
         },
-        "prescriber_id": {
+        "prescriberId": {
             "type": "integer",
-            "title": "The prescriber_id Schema",
+            "title": "The prescriberId Schema",
             "examples": [
                 8
             ]
@@ -32,18 +32,18 @@
                 "Pantoprazole"
             ]
         },
-        "start_date": {
+        "startDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The start_date Schema",
+            "title": "The startDate Schema",
             "examples": [
                 "2024-04-28"
             ]
         },
-        "end_date": {
+        "endDate": {
             "type": "string",
             "maxLength": 10,
-            "title": "The end_date Schema",
+            "title": "The endDate Schema",
             "examples": [
                 "2024-10-28"
             ]
@@ -77,11 +77,11 @@
         }
     },
     "examples": [{
-        "member_id": 3,
-        "prescriber_id": 8,
+        "memberId": 3,
+        "prescriberId": 8,
         "name": "Pantoprazole",
-        "start_date": "2024-04-28",
-        "end_date": "2024-10-28",
+        "startDate": "2024-04-28",
+        "endDate": "2024-10-28",
         "indication": "Reoccuring heartburn post colon resection.",
         "dose": "40mg oral twice daily",
         "notes": "Take before breakfast and dinner every day for six months. Might cause dry mouth."

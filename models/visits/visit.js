@@ -16,6 +16,52 @@ const {
 
 class Visit {
 
+  /** Create a visit (from data), update db, return new visit data.
+   *
+   * data should be { memberId, doctorId, title, date, description }
+  *
+  * Returns { id, memberId, doctorId, title, date, description }
+  *
+   * */
+  static async create({ memberId, doctorId, title, date, description }) {
+    const memberIdCheck = await db.query(
+      `SELECT id, 
+        first_name AS "firstName"
+       FROM family_members
+       WHERE id = $1`,
+    [memberId]);
+
+if (!memberIdCheck.rows[0])
+  throw new BadRequestError(`No existing member: ${memberId}`);
+
+
+    const result = await db.query(
+          `INSERT INTO visits
+           (member_id, doctor_id, title, date, description)
+           VALUES ($1, $2, $3, $4, $5)
+           RETURNING 
+            id, 
+            member_id AS "memberId", 
+            doctor_id AS "doctorId", 
+            title, 
+            date, 
+            description`,
+        [
+          memberId, 
+          doctorId, 
+          title, 
+          date, 
+          description
+        ],
+    );
+
+    const visit = result.rows[0];
+    visit.date = formatDate(visit.date);
+    
+    return visit;
+  }
+
+
    /** Find all visits.
    *
    * Returns [{ id, member_id, doctor_id, title, date, description}, ...]

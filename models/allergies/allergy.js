@@ -16,7 +16,7 @@ const {
 
 class Allergy {
 
-  /** Create a allergy (from data), update db, return new company data.
+  /** Create a allergy (from data), update db, return new allergy data.
    *
    *data should be { memberId, name, reaction, notes }
    *

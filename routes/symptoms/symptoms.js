@@ -14,6 +14,47 @@ const symptomUpdateSchema = require("../../schemas/symptoms/symptomUpdate.json")
 
 const router = new express.Router();
 
+
+/** POST / { symptom } =>  { symptom }
+ *
+ *
+  * data should be { memberId, name, startDate, endDate, notes }
+  *
+  * Returns { id, memberId, name, startDate, endDate, notes }
+  *
+ *
+ * Authorization required: admin or correct family id user
+ */
+
+router.post("/", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, symptomNewSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    if(!req.body.startDate){
+      req.body.startDate = null;
+    }
+    if(!req.body.endDate){
+      req.body.endDate = null;
+    }
+    if(!req.body.notes){
+      req.body.notes = null;
+    }
+    
+    const symptom = await Symptom.create(req.body);
+
+    return res.status(201).json({ symptom });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 /** GET / => { symptoms: [ {id, member_id, name, start_date, end_date, notes }, ... ] }
  *
  * Returns list of all symptoms.

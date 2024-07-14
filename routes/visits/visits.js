@@ -14,6 +14,46 @@ const visitUpdateSchema = require("../../schemas/visits/visitUpdate.json");
 
 const router = new express.Router();
 
+/** POST / { visit } =>  { visit }
+ *
+ *
+  * data should be { memberId, doctorId, title, date, description }
+  *
+  * Returns { id, memberId, doctorId, title, date, description }
+  *
+ *
+ * Authorization required: admin or correct family id user
+ */
+
+router.post("/", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, visitNewSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    if(!req.body.doctorId){
+      req.body.doctorId = null;
+    }
+    if(!req.body.date){
+      req.body.date = null;
+    }
+    if(!req.body.description){
+      req.body.description = null;
+    }
+    
+    const visit = await Visit.create(req.body);
+
+    return res.status(201).json({ visit });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 /** GET / => { visits: [ {id, member_id, doctor_id, title, date, description }, ... ] }
  *
  * Returns list of all visits.

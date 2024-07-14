@@ -14,6 +14,35 @@ const imageUpdateSchema = require("../../schemas/images/imageUpdate.json");
 
 const router = new express.Router();
 
+/** POST / { image } =>  { image }
+ *
+ *
+   * data should be { memberId, path }
+   *
+   * Returns { id, memberId, path }
+   *
+ *
+ * Authorization required: admin or correct family id user
+ */
+
+router.post("/", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, imageNewSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const image = await Image.create(req.body);
+    return res.status(201).json({ image });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 /** GET / => { images: [ {id, member_id, path }, ... ] }
  *
  * Returns list of all images.

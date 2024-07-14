@@ -15,6 +15,44 @@ const {
 
 class Image {
 
+ /** Create a image (from data), update db, return new image data.
+   *
+   *
+   * data should be { memberId, path}
+   *
+   * Returns { id, memberId, path }
+   *
+   *
+   * */
+ static async create({ memberId, path }) {
+  const memberIdCheck = await db.query(
+    `SELECT id, 
+      first_name AS "firstName"
+     FROM family_members
+     WHERE id = $1`,
+  [memberId]);
+
+if (!memberIdCheck.rows[0])
+throw new BadRequestError(`No existing member: ${memberId}`);
+
+
+  const result = await db.query(
+        `INSERT INTO images
+          (member_id, path)
+         VALUES ($1, $2)
+         RETURNING id, member_id AS "memberId", path`,
+      [
+        memberId, 
+        path
+      ],
+  );
+
+  const image = result.rows[0];
+
+  return image;
+}
+
+
   /** Find all images.
    *
    * Returns [{ id, member_id, path}, ...]

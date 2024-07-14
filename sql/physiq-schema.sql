@@ -92,7 +92,7 @@ CREATE TABLE insurance (
         REFERENCES family_members ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
     company_name VARCHAR(50) NOT NULL,
-    insured_name VARCHAR(75) NOT NULL,
+    insured_name VARCHAR(75),
     start_date DATE,
     end_date DATE,
     group_num VARCHAR(25),

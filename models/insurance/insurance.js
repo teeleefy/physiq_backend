@@ -16,6 +16,65 @@ const {
 
 class Insurance {
 
+   /** Create a insurance (from data), update db, return new insurance data.
+   *
+   * data should be {  memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId }
+   *
+   * Returns { id, memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId }
+   *
+   * */
+   static async create({ memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId}) {
+    const memberIdCheck = await db.query(
+      `SELECT id, 
+        first_name AS "firstName"
+       FROM family_members
+       WHERE id = $1`,
+    [memberId]);
+
+if (!memberIdCheck.rows[0])
+  throw new BadRequestError(`No existing member: ${memberId}`);
+
+
+    const result = await db.query(
+          `INSERT INTO insurance
+           ( member_id, type, company_name, insured_name, start_date, end_date, group_num, contract_num, notes, front_image_id, back_image_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+           RETURNING 
+            id,
+            member_id AS "memberId", 
+            type, 
+            company_name AS "companyName", 
+            insured_name AS "insuredName", 
+            start_date AS "startDate", 
+            end_date AS "endDate", 
+            group_num AS "groupNum", 
+            contract_num AS "contractNum", 
+            notes, 
+            front_image_id AS "frontImageId", 
+            back_image_id AS "backImageId"`,
+        [
+          memberId, 
+          type, 
+          companyName, 
+          insuredName, 
+          startDate, 
+          endDate, 
+          groupNum, 
+          contractNum, 
+          notes, 
+          frontImageId, 
+          backImageId
+        ],
+    );
+
+    const insurance = result.rows[0];
+    //Format Dates
+    insurance.startDate = formatDate(insurance.startDate);
+    insurance.endDate = formatDate(insurance.endDate);
+    
+    return insurance;
+  }
+
    /** Find all insurance.
    *
    * Returns [ {id, member_id, type, company_name, insured_name, start_date, end_date, group_num, contract_num, notes, front_image_id, back_image_id }, ... ]

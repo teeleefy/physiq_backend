@@ -14,6 +14,52 @@ const medUpdateSchema = require("../../schemas/meds/medUpdate.json");
 
 const router = new express.Router();
 
+/** POST / { insurance } =>  { insurance }
+ *
+ * data should be {  memberId, prescriberId, name, startDate, endDate, indication, dose, notes }
+   *
+   * Returns { id, memberId, prescriberId, name, startDate, endDate, indication, dose, notes }
+   *
+ *
+ * Authorization required: admin or correct family id user
+ */
+
+router.post("/", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, medNewSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    if(!req.body.prescriberId){
+      req.body.prescriberId = null;
+    }
+    if(!req.body.startDate){
+      req.body.startDate = null;
+    }
+    if(!req.body.endDate){
+      req.body.endDate = null;
+    }
+    if(!req.body.indication){
+      req.body.indication = null;
+    }
+    if(!req.body.dose){
+      req.body.dose = null;
+    }
+    if(!req.body.notes){
+      req.body.notes = null;
+    }
+
+    const med = await Med.create(req.body);
+    return res.status(201).json({ med });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 /** GET / => { meds: [ {id, member_id, prescriber_id, name, start_date, end_date, indication, dose, notes }, ... ] }
  *
  * Returns list of all meds.

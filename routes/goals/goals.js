@@ -14,6 +14,38 @@ const goalUpdateSchema = require("../../schemas/goals/goalUpdate.json");
 
 const router = new express.Router();
 
+/** POST / { goal } =>  { goal }
+ *
+ *
+   * data should be { memberId, goalName, goalDetails }
+   *
+   * Returns { id, memberId, goalName, goalDetails }
+   *
+ *
+ * Authorization required: admin or correct family id user
+ */
+
+router.post("/", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, goalNewSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    if(!req.body.goalDetails){
+      req.body.goalDetails = null;
+    }
+
+    const goal = await Goal.create(req.body);
+    return res.status(201).json({ goal });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 /** GET / => { goals: [ {id, member_id, goal_name, goal_details }, ... ] }
  *
  * Returns list of all goals.

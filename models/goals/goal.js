@@ -15,6 +15,50 @@ const {
 
 class Goal {
 
+ /** Create a goal (from data), update db, return new goal data.
+   *
+   *
+   * data should be { memberId, goalName, goalDetails }
+   *
+   * Returns { id, memberId, goalName, goalDetails }
+   *
+   *
+   * */
+   static async create({ memberId, goalName, goalDetails }) {
+    const memberIdCheck = await db.query(
+      `SELECT id, 
+        first_name AS "firstName"
+       FROM family_members
+       WHERE id = $1`,
+    [memberId]);
+
+if (!memberIdCheck.rows[0])
+  throw new BadRequestError(`No existing member: ${memberId}`);
+
+
+    const result = await db.query(
+          `INSERT INTO goals
+            (member_id, goal_name, goal_details)
+           VALUES ($1, $2, $3)
+           RETURNING 
+            id, 
+            member_id AS "memberId", 
+            goal_name AS "goalName", 
+            goal_details AS "goalDetails"`,
+        [
+          memberId, 
+          goalName, 
+          goalDetails
+        ],
+    );
+
+    const goal = result.rows[0];
+
+    return goal;
+  }
+
+
+
   /** Find all goals.
    *
    * Returns [{ id, member_id, goal_name, goal_details}, ...]

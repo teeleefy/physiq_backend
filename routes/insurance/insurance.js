@@ -110,7 +110,21 @@ router.get("/:id",
 
 
 
+/** DELETE /[id]  =>  { deleted: id }
+ *
+ * Authorization: admin or correct user
+ */
 
+router.delete("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    await Insurance.remove(req.params.id);
+    return res.json({ deleted: req.params.id });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 

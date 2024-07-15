@@ -101,7 +101,23 @@ if (!memberIdCheck.rows[0])
     return allergy;
   }
 
- 
+   /** Delete given allergy from database; returns undefined.
+   *
+   * Throws NotFoundError if allergy not found.
+   **/
+
+   static async remove(id) {
+    const result = await db.query(
+          `DELETE
+           FROM allergies
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
+    const allergy = result.rows[0];
+
+    if (!allergy) throw new NotFoundError(`No allergy: ${id}`);
+  }
+
 
 }
 

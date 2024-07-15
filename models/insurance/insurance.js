@@ -151,7 +151,23 @@ static async get(id) {
     return insurance;
   }
 
- 
+  /** Delete given insurance from database; returns undefined.
+   *
+   * Throws NotFoundError if insurance not found.
+   **/
+
+  static async remove(id) {
+    const result = await db.query(
+          `DELETE
+           FROM insurance
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
+    const insurance = result.rows[0];
+  
+    if (!insurance) throw new NotFoundError(`No insurance: ${id}`);
+  }
+  
 
 }
 

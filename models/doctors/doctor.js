@@ -108,7 +108,22 @@ class Doctor {
     return doctor;
   }
 
- 
+ /** Delete given doctor from database; returns undefined.
+   *
+   * Throws NotFoundError if doctor not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM doctors
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const doctor = result.rows[0];
+
+  if (!doctor) throw new NotFoundError(`No doctor: ${id}`);
+}
 
 }
 

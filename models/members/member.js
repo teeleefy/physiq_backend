@@ -380,6 +380,22 @@ if (!familyIdCheck.rows[0])
   }
 
 
+ /** Delete given member from database; returns undefined.
+   *
+   * Throws NotFoundError if member not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM family_members
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const member = result.rows[0];
+
+  if (!member) throw new NotFoundError(`No member: ${id}`);
+}
 
 
 }

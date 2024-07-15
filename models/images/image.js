@@ -94,7 +94,23 @@ throw new BadRequestError(`No existing member: ${memberId}`);
     return image;
   }
 
- 
+  /** Delete given image from database; returns undefined.
+   *
+   * Throws NotFoundError if image not found.
+   **/
+
+  static async remove(id) {
+    const result = await db.query(
+          `DELETE
+           FROM images
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
+    const image = result.rows[0];
+  
+    if (!image) throw new NotFoundError(`No image: ${id}`);
+  }
+  
 
 }
 

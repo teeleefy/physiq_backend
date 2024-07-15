@@ -257,7 +257,21 @@ router.get("/:id/goals",
 
 
 
+/** DELETE /[id]  =>  { deleted: id }
+ *
+ * Authorization: admin or correct user
+ */
 
+router.delete("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    await Member.remove(req.params.id);
+    return res.json({ deleted: req.params.id });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 module.exports = router;

@@ -120,6 +120,22 @@ static async get(id) {
     return visit;
   }
 
+ /** Delete given visit from database; returns undefined.
+   *
+   * Throws NotFoundError if visit not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM visits
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const visit = result.rows[0];
+
+  if (!visit) throw new NotFoundError(`No visit: ${id}`);
+}
 
  
 

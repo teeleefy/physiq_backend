@@ -121,7 +121,23 @@ static async get(id) {
     return symptom;
   }
 
- 
+  /** Delete given symptom from database; returns undefined.
+   *
+   * Throws NotFoundError if symptom not found.
+   **/
+
+  static async remove(id) {
+    const result = await db.query(
+          `DELETE
+           FROM symptoms
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
+    const symptom = result.rows[0];
+  
+    if (!symptom) throw new NotFoundError(`No symptom: ${id}`);
+  }
+  
 
 }
 

@@ -102,7 +102,22 @@ if (!memberIdCheck.rows[0])
     return goal;
   }
 
- 
+ /** Delete given goal from database; returns undefined.
+   *
+   * Throws NotFoundError if goal not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM goals
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const goal = result.rows[0];
+
+  if (!goal) throw new NotFoundError(`No goal: ${id}`);
+}
 
 }
 

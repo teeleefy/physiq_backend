@@ -99,16 +99,6 @@ class Family {
     );
 
     const family = result.rows[0];
-
-    const familyMembersRes = await db.query(
-      `SELECT id
-       FROM family_members
-       WHERE family_id = $1`, [family.id]);
-
-
-       family.memberIds = familyMembersRes.rows.map(m => m.id);
-
-
     return family;
   }
 
@@ -126,6 +116,8 @@ class Family {
            FROM families
            ORDER BY id`,
     );
+
+
 
     return result.rows;
   }
@@ -165,7 +157,22 @@ class Family {
     return family;
   }
 
- 
+ /** Delete given family from database; returns undefined.
+   *
+   * Throws NotFoundError if family not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM families
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const family = result.rows[0];
+
+  if (!family) throw new NotFoundError(`No family: ${id}`);
+}
 
 }
 

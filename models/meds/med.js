@@ -139,7 +139,23 @@ static async get(id) {
   }
 
 
- 
+  /** Delete given med from database; returns undefined.
+   *
+   * Throws NotFoundError if med not found.
+   **/
+
+  static async remove(id) {
+    const result = await db.query(
+          `DELETE
+           FROM meds
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
+    const med = result.rows[0];
+  
+    if (!med) throw new NotFoundError(`No med: ${id}`);
+  }
+  
 
 }
 

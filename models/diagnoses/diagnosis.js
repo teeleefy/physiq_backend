@@ -110,7 +110,22 @@ if (!memberIdCheck.rows[0])
     return diagnosis;
   }
 
- 
+ /** Delete given diagnosis from database; returns undefined.
+   *
+   * Throws NotFoundError if diagnosis not found.
+   **/
+
+ static async remove(id) {
+  const result = await db.query(
+        `DELETE
+         FROM diagnoses
+         WHERE id = $1
+         RETURNING id`,
+      [id]);
+  const diagnosis = result.rows[0];
+
+  if (!diagnosis) throw new NotFoundError(`No diagnosis: ${id}`);
+}
 
 }
 

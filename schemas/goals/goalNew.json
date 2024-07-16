@@ -8,6 +8,7 @@
         "memberId",
         "goalName"
     ],
+    "additionalProperties": false,
     "properties": {
         "memberId": {
             "type": "integer",

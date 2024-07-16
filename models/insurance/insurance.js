@@ -3,7 +3,8 @@
 const db = require("../../db");
 
 const { formatDate } = require('../../helpers/formatDate.js')
-// const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
+
 const {
   NotFoundError,
   BadRequestError,
@@ -77,7 +78,8 @@ if (!memberIdCheck.rows[0])
 
    /** Find all insurance.
    *
-   * Returns [ {id, member_id, type, company_name, insured_name, start_date, end_date, group_num, contract_num, notes, front_image_id, back_image_id }, ... ]
+   * Returns [ {id, member_id, type, company_name, insured_name, start_date, end_date, group_num, 
+   * contract_num, notes, front_image_id, back_image_id }, ... ]
    **/
 
    static async findAll() {
@@ -117,7 +119,8 @@ if (!memberIdCheck.rows[0])
 
 /** Given an id, return data about a insurance.
    *
-   * Returns { }
+   * Returns { id, member_id, type, company_name, insured_name, start_date, end_date, group_num, 
+   * contract_num, notes, front_image_id, back_image_id}
    *
    * Throws NotFoundError if insurance not found.
    **/
@@ -150,6 +153,64 @@ static async get(id) {
     
     return insurance;
   }
+
+
+ /** Update insurance data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { type, companyName, insuredName, startDate, endDate, groupNum, 
+   * contractNum, notes, frontImageId, backImageId }
+   *
+   * Returns { id, memberId, type, companyName, insuredName, startDate, endDate, groupNum, 
+   * contractNum, notes, frontImageId, backImageId  }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+ static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data,{ 
+    companyName: "company_name", 
+    insuredName: "insured_name", 
+    startDate: "start_date", 
+    endDate: "end_date", 
+    groupNum: "group_num", 
+    contractNum: "contract_num", 
+    frontImageId: "front_image_id", 
+    backImageId: "back_image_id"});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE insurance 
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              member_id AS "memberId",
+                              type, 
+                              company_name AS "companyName",
+                              insured_name AS "insuredName",
+                              start_date AS "startDate",
+                              end_date AS "endDate",
+                              group_num AS "groupNum",
+                              contract_num AS "contractNum",
+                              notes,
+                              front_image_id AS "frontImageId",
+                              back_image_id AS "backImageId"`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const insurance = result.rows[0];
+
+  if (!insurance) throw new NotFoundError(`No insurance: ${id}`);
+
+  insurance.startDate = formatDate(insurance.startDate);
+  insurance.endDate = formatDate(insurance.endDate);
+    
+  return insurance;
+}
+
 
   /** Delete given insurance from database; returns undefined.
    *

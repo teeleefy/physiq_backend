@@ -1,8 +1,8 @@
 "use strict";
 
 const db = require("../../db");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
 
-// const { sqlForPartialUpdate } = require("../helpers/sql");
 const {
   NotFoundError,
   BadRequestError,
@@ -93,6 +93,42 @@ throw new BadRequestError(`No existing member: ${memberId}`);
 
     return image;
   }
+
+/** Update image data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { path }
+   *
+   * Returns { id, memberId, path }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data, {});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE images
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              member_id AS "memberId",
+                              path`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const image = result.rows[0];
+
+  if (!image) throw new NotFoundError(`No image: ${id}`);
+
+  return image;
+}
+
+
 
   /** Delete given image from database; returns undefined.
    *

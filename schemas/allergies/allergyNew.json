@@ -9,6 +9,7 @@
         "name",
         "reaction"
     ],
+    "additionalProperties": false,
     "properties": {
         "member_id": {
             "type": "integer",

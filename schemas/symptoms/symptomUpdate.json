@@ -5,6 +5,7 @@
     "default": {},
     "title": "Root Schema",
     "required": [],
+    "additionalProperties": false,
     "properties": {
         "name": {
             "type": "string",
@@ -15,7 +16,7 @@
                 "Migraines"
             ]
         },
-        "starDate": {
+        "startDate": {
             "type": "string",
             "maxLength": 10,
             "title": "The startDate Schema",

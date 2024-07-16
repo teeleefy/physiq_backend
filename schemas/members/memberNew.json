@@ -9,6 +9,7 @@
         "firstName",
         "lastName"
     ],
+    "additionalProperties": false,
     "properties": {
         "familyId": {
             "type": "integer",

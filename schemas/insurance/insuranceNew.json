@@ -9,6 +9,7 @@
         "type",
         "companyName"
     ],
+    "additionalProperties": false,
     "properties": {
         "memberId": {
             "type": "integer",

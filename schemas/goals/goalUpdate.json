@@ -5,6 +5,7 @@
     "default": {},
     "title": "Goal Schema",
     "required": [],
+    "additionalProperties": false,
     "properties": {
         "goalName": {
             "type": "string",

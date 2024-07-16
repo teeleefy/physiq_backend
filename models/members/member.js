@@ -3,7 +3,8 @@
 const db = require("../../db");
 const bcrypt = require("bcrypt");
 const { formatDate } = require('../../helpers/formatDate.js')
-// const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
+
 const {
   NotFoundError,
   BadRequestError,
@@ -81,7 +82,7 @@ if (!familyIdCheck.rows[0])
 
   /** Given an id, return data about a member.
    *
-   * Returns { id, family_id, first_name, last_name, birthday }
+   * Returns { id, familyId, firstName, lastName, birthday }
    *   
    *
    * Throws NotFoundError if member not found.
@@ -378,6 +379,47 @@ if (!familyIdCheck.rows[0])
    
     return result.rows;
   }
+
+
+/** Update member data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { firstName, lastName, birthday }
+   *
+   * Returns { id, familyId, firstName, lastName, birthday }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data,{  
+    firstName: "first_name", 
+    lastName: "last_name"});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE family_members
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              family_id AS "familyId",
+                              first_name AS "firstName",
+                              last_name AS "lastName",
+                              birthday`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const member = result.rows[0];
+
+  if (!member) throw new NotFoundError(`No member: ${id}`);
+
+  member.birthday = formatDate(member.birthday);
+    
+  return member;
+}
 
 
  /** Delete given member from database; returns undefined.

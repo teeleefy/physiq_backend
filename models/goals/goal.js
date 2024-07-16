@@ -1,8 +1,8 @@
 "use strict";
 
 const db = require("../../db");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
 
-// const { sqlForPartialUpdate } = require("../helpers/sql");
 const {
   NotFoundError,
   BadRequestError,
@@ -79,7 +79,7 @@ if (!memberIdCheck.rows[0])
 
   /** Given an id, return data about a goal.
    *
-   * Returns { }
+   * Returns { id, memberId, goalName, goalDetails }
    *
    * Throws NotFoundError if family not found.
    **/
@@ -101,6 +101,42 @@ if (!memberIdCheck.rows[0])
 
     return goal;
   }
+
+/** Update goal data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { goalName, goalDetails }
+   *
+   * Returns { id, memberId, goalName, goalDetails }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data, {goalName: "goal_name", goalDetails: "goal_details"});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE goals
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              member_id AS "memberId",
+                              goal_name AS "goalName", 
+                              goal_details AS "goalDetails"`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const goal = result.rows[0];
+
+  if (!goal) throw new NotFoundError(`No goal: ${id}`);
+
+  return goal;
+}
+
 
  /** Delete given goal from database; returns undefined.
    *

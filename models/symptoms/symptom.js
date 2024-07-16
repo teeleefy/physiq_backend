@@ -3,7 +3,8 @@
 const db = require("../../db");
 
 const { formatDate } = require('../../helpers/formatDate.js')
-// const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
+
 const {
   NotFoundError,
   BadRequestError,
@@ -120,6 +121,49 @@ static async get(id) {
     
     return symptom;
   }
+
+/** Update symptom data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { name, startDate, endDate, notes }
+   *
+   * Returns { id, memberId, name, startDate, endDate, notes }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data,{  
+    startDate: "start_date", 
+    endDate: "end_date"});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE symptoms
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              member_id AS "memberId",
+                              name,
+                              start_date AS "startDate",
+                              end_date AS "endDate",
+                              notes`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const symptom = result.rows[0];
+
+  if (!symptom) throw new NotFoundError(`No symptom: ${id}`);
+
+  symptom.startDate = formatDate(symptom.startDate);
+  symptom.endDate = formatDate(symptom.endDate);
+    
+  return symptom;
+}
+
 
   /** Delete given symptom from database; returns undefined.
    *

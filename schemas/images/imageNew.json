@@ -8,6 +8,7 @@
         "memberId",
         "path"
     ],
+    "additionalProperties": false,
     "properties": {
         "memberId": {
             "type": "integer",

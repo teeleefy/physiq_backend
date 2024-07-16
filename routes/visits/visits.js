@@ -93,6 +93,33 @@ router.get("/:id",
   
   
 
+/** PATCH /[id] { fld1, fld2, ... } => { visit }
+ *
+ * Patches visit data.
+ *
+ * fields can be: {  }
+ *
+ * Returns { id,  }
+ *
+ * Authorization required: admin or correct user
+ */
+
+router.patch("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, visitUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const visit = await Visit.update(req.params.id, req.body);
+    return res.json({ visit });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 

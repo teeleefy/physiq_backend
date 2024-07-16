@@ -8,6 +8,7 @@
         "memberId",
         "title"
     ],
+    "additionalProperties": false,
     "properties": {
         "memberId": {
             "type": "integer",

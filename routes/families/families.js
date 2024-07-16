@@ -11,6 +11,7 @@ const Family = require("../../models/families/family");
 const { createToken } = require("../../helpers/tokens");
 const familyNewSchema = require("../../schemas/families/familyNew.json");
 const familyUpdateSchema = require("../../schemas/families/familyUpdate.json");
+const familyPasswordUpdateSchema = require("../../schemas/families/familyPasswordUpdate.json");
 
 const router = new express.Router();
 
@@ -90,6 +91,61 @@ router.get("/:id",
 
 
 
+/** PATCH /[id] { fld1, fld2, ... } => { family }
+ *
+ * Patches family data.
+ *
+ * fields can be: {  }
+ *
+ * Returns { id,  }
+ *
+ * Authorization required: admin or correct user
+ */
+
+router.patch("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, familyUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const family = await Family.update(req.params.id, req.body);
+    return res.json({ family });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** PATCH /[id]/password { fld1, fld2, ... } => { family }
+ *
+ * Patches family data.
+ *
+ * fields can be: { password }
+ *
+ * Returns { id,  }
+ *
+ * Authorization required: admin or correct user
+ */
+
+router.patch("/:id/password", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, familyPasswordUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const family = await Family.updatePassword(req.params.id, req.body);
+    return res.json({ family });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 

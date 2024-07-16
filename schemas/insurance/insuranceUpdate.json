@@ -5,6 +5,7 @@
     "default": {},
     "title": "Root Schema",
     "required": [],
+    "additionalProperties": false,
     "properties": {
         "frontImageId": {
             "type": "integer",
@@ -45,11 +46,11 @@
                 "2024-12-31"
             ]
         },
-        "insuranceName": {
+        "companyName": {
             "type": "string",
             "minLength": 2,
             "maxLength": 50,
-            "title": "The insuranceName Schema",
+            "title": "The companyName Schema",
             "examples": [
                 "BCBS"
             ]
@@ -97,7 +98,7 @@
         "type": "medical",
         "startDate": "2024-01-28",
         "endDate": "2024-12-31",
-        "insuranceName": "BCBS",
+        "companyName": "BCBS",
         "insuredName": "John J. Smith",
         "groupNum": "21413",
         "contractNum": "DKJF991JK21IM",

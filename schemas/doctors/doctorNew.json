@@ -9,6 +9,7 @@
         "name",
         "specialty"
     ],
+    "additionalProperties": false,
     "properties": {
         "memberId": {
             "type": "integer",

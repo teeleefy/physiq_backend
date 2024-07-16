@@ -2,7 +2,8 @@
 
 const db = require("../../db");
 const bcrypt = require("bcrypt");
-// const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../../helpers/sql");
+
 const {
   NotFoundError,
   BadRequestError,
@@ -117,8 +118,6 @@ class Family {
            ORDER BY id`,
     );
 
-
-
     return result.rows;
   }
 
@@ -156,6 +155,84 @@ class Family {
     family.familyMembers = familyMembersRes.rows;
     return family;
   }
+
+
+/** Update family data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { email, name }
+   *
+   * Returns { id, email, name, is_admin }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async update(id, data) {
+  if(data.email){
+        const duplicateCheck = await db.query(
+          `SELECT email
+          FROM families
+          WHERE email = $1`,
+        [data.email]);
+
+    if (duplicateCheck.rows[0]) {
+      throw new BadRequestError(`Duplicate email: ${data.email}`);
+    }
+  }
+
+  const { setColumns, values } = sqlForPartialUpdate(data,{});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE families
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              email,
+                              name,
+                              is_admin AS "isAdmin"`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const family = result.rows[0];
+
+  if (!family) throw new NotFoundError(`No family: ${id}`);
+
+  return family;
+}
+
+/** Update family password.
+   *
+   *
+   * Data can include: { password }
+   *
+   * Returns { id, email, name, is_admin }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+static async updatePassword(id, {password}) {
+
+  const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
+
+  const sqlQuery = `UPDATE families
+                    SET password = $1 
+                    WHERE id = $2 
+                    RETURNING id,
+                              email,
+                              name,
+                              is_admin AS "isAdmin"`;
+  
+  const result = await db.query(sqlQuery, [hashedPassword, id]);
+  const family = result.rows[0];
+
+  if (!family) throw new NotFoundError(`No family: ${id}`);
+
+  return { id: `${family.id}`, passwordStatus: "updated"};
+}
 
  /** Delete given family from database; returns undefined.
    *

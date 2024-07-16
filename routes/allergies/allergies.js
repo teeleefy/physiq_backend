@@ -86,6 +86,35 @@ router.get("/:id",
 });
 
 
+/** PATCH /[id] { fld1, fld2, ... } => { allergy }
+ *
+ * Patches allergy data.
+ *
+ * fields can be: {  }
+ *
+ * Returns { id,  }
+ *
+ * Authorization required: admin or correct user
+ */
+
+router.patch("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, allergyUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const allergy = await Allergy.update(req.params.id, req.body);
+    return res.json({ allergy });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 /** DELETE /[id]  =>  { deleted: id }
  *
  * Authorization: admin or correct user

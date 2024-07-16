@@ -5,6 +5,7 @@
     "default": {},
     "title": "Root Schema",
     "required": [],
+    "additionalProperties": false,
     "properties": {
         "name": {
             "type": "string",
@@ -24,14 +25,6 @@
             "format": "email",
             "examples": [
                 "email@email.com"
-            ]
-        },
-        "password": {
-            "type": "string",
-            "minLength": 8,
-            "title": "The password Schema",
-            "examples": [
-                "jklfjdasj88938sfa"
             ]
         }
     }

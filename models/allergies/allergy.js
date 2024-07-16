@@ -3,7 +3,7 @@
 const db = require("../../db");
 const bcrypt = require("bcrypt");
 const { formatDate } = require('../../helpers/formatDate.js')
-// const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../../helpers/sql.js");
 const {
   NotFoundError,
   BadRequestError,
@@ -100,6 +100,44 @@ if (!memberIdCheck.rows[0])
 
     return allergy;
   }
+
+
+ /** Update allergy data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: { name, reaction, notes }
+   *
+   * Returns { id, memberId, name, reaction, notes }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+ static async update(id, data) {
+  const { setColumns, values } = sqlForPartialUpdate(data,{});
+
+  /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
+  so the index of 'id' will be the length of values plus one*/
+  const idVarIdx = "$" + (values.length + 1);
+
+  const sqlQuery = `UPDATE allergies 
+                    SET ${setColumns} 
+                    WHERE id = ${idVarIdx} 
+                    RETURNING id,
+                              member_id AS "memberId",
+                              name,
+                              reaction,
+                              notes`;
+  
+  const result = await db.query(sqlQuery, [...values, id]);
+  const allergy = result.rows[0];
+
+  if (!allergy) throw new NotFoundError(`No allergy: ${id}`);
+
+  return allergy;
+}
+
 
    /** Delete given allergy from database; returns undefined.
    *

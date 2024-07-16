@@ -81,6 +81,33 @@ router.get("/",
 });
 
 
+/** PATCH /[id] { fld1, fld2, ... } => { image }
+ *
+ * Patches image data.
+ *
+ * fields can be: {  }
+ *
+ * Returns { id,  }
+ *
+ * Authorization required: admin or correct user
+ */
+
+router.patch("/:id", 
+  // ensureCorrectUserOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, imageUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const image = await Image.update(req.params.id, req.body);
+    return res.json({ image });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 

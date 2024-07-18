@@ -5,20 +5,20 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
-const { BadRequestError } = require("../../expressError");
-const Symptom = require("../../models/symptoms/symptom");
-// const { createToken } = require("../../helpers/tokens");
-const symptomNewSchema = require("../../schemas/symptoms/symptomNew.json");
-const symptomUpdateSchema = require("../../schemas/symptoms/symptomUpdate.json");
+const {ensureCorrectMemberOrAdmin } = require("../../../middleware/auth");
+const { BadRequestError } = require("../../../expressError");
+const Symptom = require("../../../models/symptoms/symptom");
+
+const symptomNewSchema = require("../../../schemas/symptoms/symptomNew.json");
+const symptomUpdateSchema = require("../../../schemas/symptoms/symptomUpdate.json");
 
 const router = new express.Router();
 
 
-/** POST / { symptom } =>  { symptom }
+/** POST /[id]/symptom  =>  { symptom }
  *
  *
-  * data should be { memberId, name, startDate, endDate, notes }
+  * data should be { name, startDate, endDate, notes }
   *
   * Returns { id, memberId, name, startDate, endDate, notes }
   *
@@ -26,8 +26,8 @@ const router = new express.Router();
  * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
+router.post("/:id/symptoms", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, symptomNewSchema);
@@ -45,8 +45,8 @@ router.post("/",
     if(!req.body.notes){
       req.body.notes = null;
     }
-    
-    const symptom = await Symptom.create(req.body);
+    const memberId = +req.params.id;
+    const symptom = await Symptom.create(req.body, memberId);
 
     return res.status(201).json({ symptom });
   } catch (err) {
@@ -54,25 +54,6 @@ router.post("/",
   }
 });
 
-
-/** GET / => { symptoms: [ {id, member_id, name, start_date, end_date, notes }, ... ] }
- *
- * Returns list of all symptoms.
- *
- * Authorization required: admin
- **/
-
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const symptoms = await Symptom.findAll();
-      return res.json({ symptoms });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
 /** GET /[id] => { symptoms }
  *
@@ -82,7 +63,7 @@ router.get("/",
  **/
 
 router.get("/:id", 
-    // ensureCorrectUserOrAdmin, 
+    ensureCorrectMemberOrAdmin, 
     async function (req, res, next) {
     try {
       const symptoms = await Symptom.get(req.params.id);
@@ -104,8 +85,8 @@ router.get("/:id",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:id/symptoms/:symptomId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, symptomUpdateSchema);
@@ -113,8 +94,9 @@ router.patch("/:id",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-
-    const symptom = await Symptom.update(req.params.id, req.body);
+    const memberId = +req.params.id;
+    const symptomId = +req.params.symptomId;
+    const symptom = await Symptom.update(req.body, symptomId, memberId);
     return res.json({ symptom });
   } catch (err) {
     return next(err);
@@ -127,12 +109,14 @@ router.patch("/:id",
  * Authorization: admin or correct user
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:id/symptoms/:symptomId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Symptom.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const memberId = +req.params.id;
+    const symptomId = +req.params.symptomId;
+    let deletedSymptom = await Symptom.remove(symptomId, memberId);
+    return res.json({ deleted: deletedSymptom.id });
   } catch (err) {
     return next(err);
   }

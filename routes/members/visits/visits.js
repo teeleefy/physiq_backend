@@ -5,19 +5,19 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
-const { BadRequestError } = require("../../expressError");
-const Visit = require("../../models/visits/visit");
-// const { createToken } = require("../../helpers/tokens");
-const visitNewSchema = require("../../schemas/visits/visitNew.json");
-const visitUpdateSchema = require("../../schemas/visits/visitUpdate.json");
+const { ensureCorrectMemberOrAdmin } = require("../../../middleware/auth");
+const { BadRequestError } = require("../../../expressError");
+const Visit = require("../../../models/visits/visit");
+
+const visitNewSchema = require("../../../schemas/visits/visitNew.json");
+const visitUpdateSchema = require("../../../schemas/visits/visitUpdate.json");
 
 const router = new express.Router();
 
-/** POST / { visit } =>  { visit }
+/** POST /[id]/visit  =>  { visit }
  *
  *
-  * data should be { memberId, doctorId, title, date, description }
+  * data should be { doctorId, title, date, description }
   *
   * Returns { id, memberId, doctorId, title, date, description }
   *
@@ -25,8 +25,8 @@ const router = new express.Router();
  * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
+router.post("/:id/visits", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, visitNewSchema);
@@ -44,8 +44,8 @@ router.post("/",
     if(!req.body.description){
       req.body.description = null;
     }
-    
-    const visit = await Visit.create(req.body);
+    const memberId = +req.params.id;
+    const visit = await Visit.create(req.body, memberId);
 
     return res.status(201).json({ visit });
   } catch (err) {
@@ -54,25 +54,6 @@ router.post("/",
 });
 
 
-/** GET / => { visits: [ {id, member_id, doctor_id, title, date, description }, ... ] }
- *
- * Returns list of all visits.
- *
- * Authorization required: admin
- **/
-
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const visits = await Visit.findAll();
-      return res.json({ visits });
-    } catch (err) {
-      return next(err);
-    }
-  });
-  
 /** GET /[id] => { visit }
  *
  * Returns visit: {  }
@@ -81,7 +62,7 @@ router.get("/",
  **/
 
 router.get("/:id", 
-    // ensureCorrectUserOrAdmin, 
+    ensureCorrectMemberOrAdmin, 
     async function (req, res, next) {
     try {
       const visit = await Visit.get(req.params.id);
@@ -104,8 +85,8 @@ router.get("/:id",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:id/visits/:visitId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, visitUpdateSchema);
@@ -113,8 +94,9 @@ router.patch("/:id",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-
-    const visit = await Visit.update(req.params.id, req.body);
+    const memberId = +req.params.id;
+    const visitId = +req.params.visitId;
+    const visit = await Visit.update(req.body, visitId, memberId);
     return res.json({ visit });
   } catch (err) {
     return next(err);
@@ -129,12 +111,14 @@ router.patch("/:id",
  * Authorization: admin or correct user
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:id/visits/:visitId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Visit.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const memberId = +req.params.id;
+    const visitId = +req.params.visitId;
+    let deletedVisit = await Visit.remove(visitId, memberId);
+    return res.json({ deleted: deletedVisit.id });
   } catch (err) {
     return next(err);
   }

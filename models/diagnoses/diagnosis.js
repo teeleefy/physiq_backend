@@ -19,12 +19,12 @@ class Diagnosis {
 
     /** Create a diagnosis (from data), update db, return new diagnosis data.
    *
-   * data should be { memberId, name, dateReceived, notes}
+   * data should be { name, dateReceived, notes}
    *
    * Returns { id, memberId, name, dateReceived, notes }
    *
    * */
-   static async create({ memberId, name, dateReceived, notes }) {
+   static async create({ name, dateReceived, notes }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -123,7 +123,21 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if not found.
    */
 
- static async update(id, data) {
+ static async update(data, diagnosisId, memberId) {
+  const diagnosisRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM diagnoses
+      WHERE id = $1`,
+      [diagnosisId]);
+
+  const diagnosisCheck = diagnosisRes.rows[0];
+
+  //Check to see if diagnosis exists by diagnosisId in db
+  if (!diagnosisCheck) throw new NotFoundError(`No diagnosis: ${diagnosisId}`);
+  //Confirm authorization: Check to see if memberId matches the diagnosis member_id in db
+  if (diagnosisCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{ dateReceived: "date_received"});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -139,10 +153,8 @@ if (!memberIdCheck.rows[0])
                               date_received AS "dateReceived",
                               notes`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, diagnosisId]);
   const diagnosis = result.rows[0];
-
-  if (!diagnosis) throw new NotFoundError(`No diagnosis: ${id}`);
 
   diagnosis.dateReceived = formatDate(diagnosis.dateReceived);
 
@@ -152,18 +164,33 @@ if (!memberIdCheck.rows[0])
  /** Delete given diagnosis from database; returns undefined.
    *
    * Throws NotFoundError if diagnosis not found.
+   * Throws UnauthorizedError if memberId does not match diagnosis memberId in db. 
    **/
 
- static async remove(id) {
+ static async remove(diagnosisId, memberId) {
+  const diagnosisRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM diagnoses
+      WHERE id = $1`,
+      [diagnosisId]);
+
+  const diagnosis = diagnosisRes.rows[0];
+
+  //Check to see if diagnosis exists by diagnosisId in db
+  if (!diagnosis) throw new NotFoundError(`No diagnosis: ${diagnosisId}`);
+  //Confirm authorization: Check to see if memberId matches the diagnosis member_id in db
+  if (diagnosis.memberId !== memberId) throw new UnauthorizedError();
+
+
   const result = await db.query(
         `DELETE
          FROM diagnoses
          WHERE id = $1
          RETURNING id`,
-      [id]);
-  const diagnosis = result.rows[0];
-
-  if (!diagnosis) throw new NotFoundError(`No diagnosis: ${id}`);
+      [diagnosisId]);
+  const deletedDiagnosis = result.rows[0];
+    return deletedDiagnosis;
 }
 
 }

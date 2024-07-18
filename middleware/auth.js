@@ -18,9 +18,17 @@ const { UnauthorizedError } = require("../expressError");
 function authenticateJWT(req, res, next) {
   try {
     const authHeader = req.headers && req.headers.authorization;
+    // console.log(`Authorization: ${req.headers.authorization}`)
+    // console.log(`authHeader: ${authHeader}`)
     if (authHeader) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      res.locals.family = jwt.verify(token, SECRET_KEY);
+      // console.log(`Token: ${token}`)
+      // console.log('BEFORE JWT VERIFY')
+      let family = jwt.verify(token, SECRET_KEY);
+      // console.log('AFTER JWT VERIFY')
+      // console.log(`JWT family: ${family.familyId}`);
+      res.locals.family = family;
+      
     }
     return next();
   } catch (err) {
@@ -59,18 +67,40 @@ function ensureAdmin(req, res, next) {
   }
 }
 
+
+
 /** Middleware to use when they must provide a valid token & be user matching
  *  username provided as route param.
  *
  *  If not, raises Unauthorized.
  */
 
-function ensureCorrectUserOrAdmin(req, res, next) {
+function ensureCorrectFamilyOrAdmin(req, res, next) {
   try {
     const family = res.locals.family;
-    if (!(family && (family.isAdmin || family.memberIds.includes(req.params.id)))) {
+    if (!(family && (family.isAdmin || family.familyId === +req.params.familyId))) {
       throw new UnauthorizedError();
     }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+// /** Middleware to use when they must provide a valid token & be user matching
+//  *  username provided as route param.
+//  *
+//  *  If not, raises Unauthorized.
+//  */
+
+function ensureCorrectMemberOrAdmin(req, res, next) {
+  try {
+    const family = res.locals.family;
+    
+    if (!(family && (family.isAdmin || family.memberIds.includes(+req.params.id)))) {
+      throw new UnauthorizedError();
+    }
+    
     return next();
   } catch (err) {
     return next(err);
@@ -82,5 +112,6 @@ module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureAdmin,
-  ensureCorrectUserOrAdmin,
+  ensureCorrectFamilyOrAdmin,
+  ensureCorrectMemberOrAdmin,
 };

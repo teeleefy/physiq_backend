@@ -5,18 +5,10 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "memberId",
         "name"
     ],
     "additionalProperties": false,
     "properties": {
-        "memberId": {
-            "type": "integer",
-            "title": "The memberId Schema",
-            "examples": [
-                3
-            ]
-        },
         "prescriberId": {
             "type": "integer",
             "title": "The prescriberId Schema",
@@ -78,7 +70,6 @@
         }
     },
     "examples": [{
-        "memberId": 3,
         "prescriberId": 8,
         "name": "Pantoprazole",
         "startDate": "2024-04-28",

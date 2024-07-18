@@ -19,12 +19,12 @@ class Med {
 
   /** Create a med (from data), update db, return new med data.
    *
-   * data should be {  memberId, prescriberId, name, startDate, endDate, indication, dose, notes }
+   * data should be { prescriberId, name, startDate, endDate, indication, dose, notes }
    *
    * Returns { id, memberId, prescriberId, name, startDate, endDate, indication, dose, notes }
    *
    * */
-  static async create({ memberId, prescriberId, name, startDate, endDate, indication, dose, notes }) {
+  static async create({ prescriberId, name, startDate, endDate, indication, dose, notes }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -152,7 +152,21 @@ static async get(id) {
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, medId, memberId) {
+  const medRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM meds
+      WHERE id = $1`,
+      [medId]);
+
+  const medCheck = medRes.rows[0];
+
+  //Check to see if med exists by medId in db
+  if (!medCheck) throw new NotFoundError(`No med: ${medId}`);
+  //Confirm authorization: Check to see if memberId matches the med member_id in db
+  if (medCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{ 
     prescriberId: "prescriber_id", 
     startDate: "start_date", 
@@ -175,10 +189,8 @@ static async update(id, data) {
                               dose,
                               notes`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, medId]);
   const med = result.rows[0];
-
-  if (!med) throw new NotFoundError(`No med: ${id}`);
 
   med.startDate = formatDate(med.startDate);
   med.endDate = formatDate(med.endDate);
@@ -191,16 +203,30 @@ static async update(id, data) {
    * Throws NotFoundError if med not found.
    **/
 
-  static async remove(id) {
+  static async remove(medId, memberId) {
+    const medRes = await db.query(
+      `SELECT id,
+              member_id AS "memberId"
+        FROM meds
+        WHERE id = $1`,
+        [medId]);
+  
+    const medCheck = medRes.rows[0];
+  
+    //Check to see if med exists by medId in db
+    if (!medCheck) throw new NotFoundError(`No med: ${medId}`);
+    //Confirm authorization: Check to see if memberId matches the med member_id in db
+    if (medCheck.memberId !== memberId) throw new UnauthorizedError();
+
     const result = await db.query(
           `DELETE
            FROM meds
            WHERE id = $1
            RETURNING id`,
-        [id]);
-    const med = result.rows[0];
+        [medId]);
+    const deletedMed = result.rows[0];
   
-    if (!med) throw new NotFoundError(`No med: ${id}`);
+    return deletedMed;
   }
   
 

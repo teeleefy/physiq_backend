@@ -5,17 +5,17 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
-const { BadRequestError } = require("../../expressError");
-const Diagnosis = require("../../models/diagnoses/diagnosis");
-// const { createToken } = require("../../helpers/tokens");
-const diagnosisNewSchema = require("../../schemas/diagnoses/diagnosisNew.json");
-const diagnosisUpdateSchema = require("../../schemas/diagnoses/diagnosisUpdate.json");
+const { ensureCorrectMemberOrAdmin } = require("../../../middleware/auth");
+const { BadRequestError } = require("../../../expressError");
+const Diagnosis = require("../../../models/diagnoses/diagnosis");
+
+const diagnosisNewSchema = require("../../../schemas/diagnoses/diagnosisNew.json");
+const diagnosisUpdateSchema = require("../../../schemas/diagnoses/diagnosisUpdate.json");
 
 const router = new express.Router();
 
 
-/** POST / { diagnosis } =>  { diagnosis }
+/** POST /:id/diagnoses/ { diagnosis } =>  { diagnosis }
  *
  *
   * data should be { memberId, name, dateReceived, notes}
@@ -26,8 +26,8 @@ const router = new express.Router();
  * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
+router.post("/:id/diagnoses", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, diagnosisNewSchema);
@@ -43,34 +43,13 @@ router.post("/",
     if(!req.body.notes){
       req.body.notes = null;
     }
-
-    const diagnosis = await Diagnosis.create(req.body);
+    const memberId = +req.params.id;
+    const diagnosis = await Diagnosis.create(req.body, memberId);
     return res.status(201).json({ diagnosis });
   } catch (err) {
     return next(err);
   }
 });
-
-
-
-/** GET / => { diagnoses: [ {id, member_id, name, date_received, notes }, ... ] }
- *
- * Returns list of all diagnoses.
- *
- * Authorization required: admin
- **/
-
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const diagnoses = await Diagnosis.findAll();
-      return res.json({ diagnoses });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
 /** GET /[id] => { diagnosis }
  *
@@ -79,16 +58,16 @@ router.get("/",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-router.get("/:id", 
-  // ensureCorrectUserOrAdmin, 
-  async function (req, res, next) {
-  try {
-    const diagnosis = await Diagnosis.get(req.params.id);
-    return res.json({ diagnosis });
-  } catch (err) {
-    return next(err);
-  }
-});
+// router.get("/:id", 
+//   ensureCorrectMemberOrAdmin, 
+//   async function (req, res, next) {
+//   try {
+//     const diagnosis = await Diagnosis.get(req.params.id);
+//     return res.json({ diagnosis });
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 
 /** PATCH /[id] { fld1, fld2, ... } => { diagnosis }
@@ -102,8 +81,8 @@ router.get("/:id",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:id/diagnoses/:diagnosisId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, diagnosisUpdateSchema);
@@ -111,8 +90,10 @@ router.patch("/:id",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    const memberId = +req.params.id;
+    const diagnosisId = +req.params.diagnosisId;
 
-    const diagnosis = await Diagnosis.update(req.params.id, req.body);
+    const diagnosis = await Diagnosis.update(req.body, diagnosisId, memberId);
     return res.json({ diagnosis });
   } catch (err) {
     return next(err);
@@ -125,12 +106,15 @@ router.patch("/:id",
  * Authorization: admin or correct user
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:id/diagnoses/:diagnosisId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Diagnosis.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const memberId = +req.params.id;
+    const diagnosisId = +req.params.diagnosisId;
+
+    let deletedDiagnosis = await Diagnosis.remove(diagnosisId, memberId);
+    return res.json({ deleted: deletedDiagnosis.id });
   } catch (err) {
     return next(err);
   }

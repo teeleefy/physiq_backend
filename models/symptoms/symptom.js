@@ -19,12 +19,12 @@ class Symptom {
 
    /** Create a symptom (from data), update db, return new symptom data.
    *
-   * data should be { memberId, name, startDate, endDate, notes }
+   * data should be { name, startDate, endDate, notes }
   *
   * Returns { id, memberId, name, startDate, endDate, notes  }
   *
    * */
-   static async create({ memberId, name, startDate, endDate, notes  }) {
+   static async create({ name, startDate, endDate, notes  }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -134,7 +134,21 @@ static async get(id) {
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, symptomId, memberId) {
+  const symptomRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM symptoms
+      WHERE id = $1`,
+      [symptomId]);
+
+  const symptomCheck = symptomRes.rows[0];
+
+  //Check to see if symptom exists by symptomId in db
+  if (!symptomCheck) throw new NotFoundError(`No symptom: ${symptomId}`);
+  //Confirm authorization: Check to see if memberId matches the symptom member_id in db
+  if (symptomCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{  
     startDate: "start_date", 
     endDate: "end_date"});
@@ -153,10 +167,8 @@ static async update(id, data) {
                               end_date AS "endDate",
                               notes`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, symptomId]);
   const symptom = result.rows[0];
-
-  if (!symptom) throw new NotFoundError(`No symptom: ${id}`);
 
   symptom.startDate = formatDate(symptom.startDate);
   symptom.endDate = formatDate(symptom.endDate);
@@ -170,16 +182,30 @@ static async update(id, data) {
    * Throws NotFoundError if symptom not found.
    **/
 
-  static async remove(id) {
+  static async remove(symptomId, memberId) {
+    const symptomRes = await db.query(
+      `SELECT id,
+              member_id AS "memberId"
+        FROM symptoms
+        WHERE id = $1`,
+        [symptomId]);
+  
+    const symptomCheck = symptomRes.rows[0];
+  
+    //Check to see if symptom exists by symptomId in db
+    if (!symptomCheck) throw new NotFoundError(`No symptom: ${symptomId}`);
+    //Confirm authorization: Check to see if memberId matches the symptom member_id in db
+    if (symptomCheck.memberId !== memberId) throw new UnauthorizedError();
+
     const result = await db.query(
           `DELETE
            FROM symptoms
            WHERE id = $1
            RETURNING id`,
-        [id]);
-    const symptom = result.rows[0];
+        [symptomId]);
+    const deletedSymptom = result.rows[0];
   
-    if (!symptom) throw new NotFoundError(`No symptom: ${id}`);
+    return deletedSymptom;
   }
   
 

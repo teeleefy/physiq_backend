@@ -17,12 +17,12 @@ class Doctor {
 
     /** Create a doctor (from data), update db, return new doctor data.
    *
-   * data should be { memberId, name, specialty, clinic, address, phone, notes }
+   * data should be { name, specialty, clinic, address, phone, notes }
    *
    * Returns { id, memberId, name, specialty, clinic, address, phone, notes }
    *
    * */
-    static async create({ memberId, name, specialty, clinic, address, phone, notes}) {
+    static async create({ name, specialty, clinic, address, phone, notes}, memberId) {
       const memberIdCheck = await db.query(
         `SELECT id, 
           first_name AS "firstName"
@@ -120,7 +120,21 @@ class Doctor {
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, doctorId, memberId) {
+  const doctorRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM doctors
+      WHERE id = $1`,
+      [doctorId]);
+
+  const doctorCheck = doctorRes.rows[0];
+
+  //Check to see if doctor exists by doctorId in db
+  if (!doctorCheck) throw new NotFoundError(`No doctor: ${doctorId}`);
+  //Confirm authorization: Check to see if memberId matches the doctor member_id in db
+  if (doctorCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -139,10 +153,10 @@ static async update(id, data) {
                               phone,
                               notes`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, doctorId]);
   const doctor = result.rows[0];
 
-  if (!doctor) throw new NotFoundError(`No doctor: ${id}`);
+  if (!doctor) throw new NotFoundError(`No doctor: ${doctorId}`);
 
   return doctor;
 }
@@ -152,16 +166,30 @@ static async update(id, data) {
    * Throws NotFoundError if doctor not found.
    **/
 
- static async remove(id) {
+ static async remove(doctorId, memberId) {
+  const doctorRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM doctors
+      WHERE id = $1`,
+      [doctorId]);
+
+  const doctor = doctorRes.rows[0];
+
+  //Check to see if doctor exists by doctorId in db
+  if (!doctor) throw new NotFoundError(`No doctor: ${doctorId}`);
+  //Confirm authorization: Check to see if memberId matches the doctor member_id in db
+  if (doctor.memberId !== memberId) throw new UnauthorizedError();
+
   const result = await db.query(
         `DELETE
          FROM doctors
          WHERE id = $1
          RETURNING id`,
-      [id]);
-  const doctor = result.rows[0];
-
-  if (!doctor) throw new NotFoundError(`No doctor: ${id}`);
+      [doctorId]);
+  const deletedDoctor = result.rows[0];
+  return deletedDoctor;
+  
 }
 
 }

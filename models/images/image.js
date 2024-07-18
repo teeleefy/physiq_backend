@@ -24,7 +24,7 @@ class Image {
    *
    *
    * */
- static async create({ memberId, path }) {
+ static async create({ path }, memberId) {
   const memberIdCheck = await db.query(
     `SELECT id, 
       first_name AS "firstName"
@@ -106,7 +106,22 @@ throw new BadRequestError(`No existing member: ${memberId}`);
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, imageId, memberId) {
+  const imageRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM images
+      WHERE id = $1`,
+      [imageId]);
+
+  const imageCheck = imageRes.rows[0];
+
+  //Check to see if image exists by imageId in db
+  if (!imageCheck) throw new NotFoundError(`No image: ${imageId}`);
+  //Confirm authorization: Check to see if memberId matches the image member_id in db
+  if (imageCheck.memberId !== memberId) throw new UnauthorizedError();
+
+
   const { setColumns, values } = sqlForPartialUpdate(data, {});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -120,10 +135,10 @@ static async update(id, data) {
                               member_id AS "memberId",
                               path`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, imageId]);
   const image = result.rows[0];
 
-  if (!image) throw new NotFoundError(`No image: ${id}`);
+  if (!image) throw new NotFoundError(`No image: ${imageId}`);
 
   return image;
 }
@@ -135,16 +150,31 @@ static async update(id, data) {
    * Throws NotFoundError if image not found.
    **/
 
-  static async remove(id) {
+  static async remove(imageId, memberId) {
+    const imageRes = await db.query(
+      `SELECT id,
+              member_id AS "memberId"
+        FROM images
+        WHERE id = $1`,
+        [imageId]);
+  
+    const image = imageRes.rows[0];
+  
+    //Check to see if image exists by imageId in db
+    if (!image) throw new NotFoundError(`No image: ${imageId}`);
+    //Confirm authorization: Check to see if memberId matches the image member_id in db
+    if (image.memberId !== memberId) throw new UnauthorizedError();
+
+
     const result = await db.query(
           `DELETE
            FROM images
            WHERE id = $1
            RETURNING id`,
-        [id]);
-    const image = result.rows[0];
+        [imageId]);
+    const deletedImage = result.rows[0];
   
-    if (!image) throw new NotFoundError(`No image: ${id}`);
+    return deletedImage;
   }
   
 

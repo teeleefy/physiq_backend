@@ -18,13 +18,13 @@ class Goal {
  /** Create a goal (from data), update db, return new goal data.
    *
    *
-   * data should be { memberId, goalName, goalDetails }
+   * data should be { goalName, goalDetails }
    *
    * Returns { id, memberId, goalName, goalDetails }
    *
    *
    * */
-   static async create({ memberId, goalName, goalDetails }) {
+   static async create({ goalName, goalDetails }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -114,7 +114,21 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, goalId, memberId) {
+  const goalRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM goals
+      WHERE id = $1`,
+      [goalId]);
+
+  const goalCheck = goalRes.rows[0];
+
+  //Check to see if goal exists by goalId in db
+  if (!goalCheck) throw new NotFoundError(`No goal: ${goalId}`);
+  //Confirm authorization: Check to see if memberId matches the goal member_id in db
+  if (goalCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data, {goalName: "goal_name", goalDetails: "goal_details"});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -129,10 +143,10 @@ static async update(id, data) {
                               goal_name AS "goalName", 
                               goal_details AS "goalDetails"`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, goalId]);
   const goal = result.rows[0];
 
-  if (!goal) throw new NotFoundError(`No goal: ${id}`);
+  if (!goal) throw new NotFoundError(`No goal: ${goalId}`);
 
   return goal;
 }
@@ -143,16 +157,30 @@ static async update(id, data) {
    * Throws NotFoundError if goal not found.
    **/
 
- static async remove(id) {
+ static async remove(goalId, memberId) {
+  const goalRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM goals
+      WHERE id = $1`,
+      [goalId]);
+
+  const goal = goalRes.rows[0];
+
+  //Check to see if goal exists by goalId in db
+  if (!goal) throw new NotFoundError(`No goal: ${goalId}`);
+  //Confirm authorization: Check to see if memberId matches the goal member_id in db
+  if (goal.memberId !== memberId) throw new UnauthorizedError();
+
   const result = await db.query(
         `DELETE
          FROM goals
          WHERE id = $1
          RETURNING id`,
-      [id]);
-  const goal = result.rows[0];
+      [goalId]);
+  const deletedGoal = result.rows[0];
 
-  if (!goal) throw new NotFoundError(`No goal: ${id}`);
+  return deletedGoal;
 }
 
 }

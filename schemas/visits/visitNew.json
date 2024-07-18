@@ -5,18 +5,10 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "memberId",
         "title"
     ],
     "additionalProperties": false,
     "properties": {
-        "memberId": {
-            "type": "integer",
-            "title": "The memberId Schema",
-            "examples": [
-                3
-            ]
-        },
         "doctorId": {
             "type": "integer",
             "title": "The doctorId Schema",
@@ -52,7 +44,6 @@
         }
     },
     "examples": [{
-        "memberId": 3,
         "doctorId": 8,
         "title": "Yearly Check-up",
         "date": "2024-04-28",

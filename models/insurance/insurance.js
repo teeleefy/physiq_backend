@@ -19,12 +19,12 @@ class Insurance {
 
    /** Create a insurance (from data), update db, return new insurance data.
    *
-   * data should be {  memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId }
+   * data should be {  type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId }
    *
    * Returns { id, memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId }
    *
    * */
-   static async create({ memberId, type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId}) {
+   static async create({ type, companyName, insuredName, startDate, endDate, groupNum, contractNum, notes, frontImageId, backImageId}, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -169,7 +169,21 @@ static async get(id) {
    * Throws NotFoundError if not found.
    */
 
- static async update(id, data) {
+ static async update(data, insuranceId, memberId) {
+  const insuranceRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM insurance
+      WHERE id = $1`,
+      [insuranceId]);
+
+  const insuranceCheck = insuranceRes.rows[0];
+
+  //Check to see if insurance exists by insuranceId in db
+  if (!insuranceCheck) throw new NotFoundError(`No insurance: ${insuranceId}`);
+  //Confirm authorization: Check to see if memberId matches the insurance member_id in db
+  if (insuranceCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{ 
     companyName: "company_name", 
     insuredName: "insured_name", 
@@ -200,10 +214,8 @@ static async get(id) {
                               front_image_id AS "frontImageId",
                               back_image_id AS "backImageId"`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, insuranceId]);
   const insurance = result.rows[0];
-
-  if (!insurance) throw new NotFoundError(`No insurance: ${id}`);
 
   insurance.startDate = formatDate(insurance.startDate);
   insurance.endDate = formatDate(insurance.endDate);
@@ -217,16 +229,30 @@ static async get(id) {
    * Throws NotFoundError if insurance not found.
    **/
 
-  static async remove(id) {
+  static async remove(insuranceId, memberId) {
+    const insuranceRes = await db.query(
+      `SELECT id,
+              member_id AS "memberId"
+        FROM insurance
+        WHERE id = $1`,
+        [insuranceId]);
+  
+    const insurance = insuranceRes.rows[0];
+  
+    //Check to see if insurance exists by insuranceId in db
+    if (!insurance) throw new NotFoundError(`No insurance: ${insuranceId}`);
+    //Confirm authorization: Check to see if memberId matches the insurance member_id in db
+    if (insurance.memberId !== memberId) throw new UnauthorizedError();
+
     const result = await db.query(
           `DELETE
            FROM insurance
            WHERE id = $1
            RETURNING id`,
-        [id]);
-    const insurance = result.rows[0];
+        [insuranceId]);
+    const deletedInsurance = result.rows[0];
   
-    if (!insurance) throw new NotFoundError(`No insurance: ${id}`);
+    return deletedInsurance;
   }
   
 

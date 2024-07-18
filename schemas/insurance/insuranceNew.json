@@ -5,19 +5,11 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "memberId",
         "type",
         "companyName"
     ],
     "additionalProperties": false,
     "properties": {
-        "memberId": {
-            "type": "integer",
-            "title": "The memberId Schema",
-            "examples": [
-                3
-            ]
-        },
         "frontImageId": {
             "type": "integer",
             "title": "The frontImageId Schema",
@@ -104,7 +96,6 @@
         }
     },
     "examples": [{
-        "memberId": 3,
         "frontImageId": 18,
         "backImageId": 19,
         "type": "medical",

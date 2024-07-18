@@ -5,19 +5,19 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
-const { BadRequestError } = require("../../expressError");
-const Goal = require("../../models/goals/goal");
-// const { createToken } = require("../../helpers/tokens");
-const goalNewSchema = require("../../schemas/goals/goalNew.json");
-const goalUpdateSchema = require("../../schemas/goals/goalUpdate.json");
+const { ensureCorrectMemberOrAdmin } = require("../../../middleware/auth");
+const { BadRequestError } = require("../../../expressError");
+const Goal = require("../../../models/goals/goal");
+
+const goalNewSchema = require("../../../schemas/goals/goalNew.json");
+const goalUpdateSchema = require("../../../schemas/goals/goalUpdate.json");
 
 const router = new express.Router();
 
-/** POST / { goal } =>  { goal }
+/** POST /members/[id]/goals { goal } =>  { goal }
  *
  *
-   * data should be { memberId, goalName, goalDetails }
+   * data should be { goalName, goalDetails }
    *
    * Returns { id, memberId, goalName, goalDetails }
    *
@@ -25,8 +25,8 @@ const router = new express.Router();
  * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
+router.post("/:id/goals", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, goalNewSchema);
@@ -38,32 +38,14 @@ router.post("/",
     if(!req.body.goalDetails){
       req.body.goalDetails = null;
     }
-
-    const goal = await Goal.create(req.body);
+    const memberId = +req.params.id;
+    const goal = await Goal.create(req.body, memberId);
     return res.status(201).json({ goal });
   } catch (err) {
     return next(err);
   }
 });
 
-/** GET / => { goals: [ {id, member_id, goal_name, goal_details }, ... ] }
- *
- * Returns list of all goals.
- *
- * Authorization required: admin
- **/
-
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const goals = await Goal.findAll();
-      return res.json({ goals });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
  /** GET /[id] => { goal }
  *
@@ -73,7 +55,7 @@ router.get("/",
  **/
 
  router.get("/:id", 
-    // ensureCorrectUserOrAdmin, 
+    ensureCorrectMemberOrAdmin, 
     async function (req, res, next) {
     try {
       const goal = await Goal.get(req.params.id);
@@ -94,8 +76,8 @@ router.get("/",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:id/goals/:goalId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, goalUpdateSchema);
@@ -104,7 +86,10 @@ router.patch("/:id",
       throw new BadRequestError(errs);
     }
 
-    const goal = await Goal.update(req.params.id, req.body);
+    const memberId = +req.params.id;
+    const goalId = +req.params.goalId;
+
+    const goal = await Goal.update(req.body, goalId, memberId);
     return res.json({ goal });
   } catch (err) {
     return next(err);
@@ -118,12 +103,15 @@ router.patch("/:id",
  * Authorization: admin or correct user
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:id/goals/:goalId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Goal.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const memberId = +req.params.id;
+    const goalId = +req.params.goalId;
+
+    let deletedGoal = await Goal.remove(goalId, memberId);
+    return res.json({ deleted: deletedGoal.id });
   } catch (err) {
     return next(err);
   }

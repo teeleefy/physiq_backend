@@ -24,7 +24,7 @@ class Member {
    *
    *
    * */
-  static async create({ familyId, firstName, lastName, birthday }) {
+  static async create({ firstName, lastName, birthday }, familyId) {
     const familyIdCheck = await db.query(
       `SELECT id, name
        FROM families

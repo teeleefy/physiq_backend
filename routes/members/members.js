@@ -5,77 +5,24 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
+const { ensureCorrectMemberOrAdmin } = require("../../middleware/auth");
 const { BadRequestError } = require("../../expressError");
 const Member = require("../../models/members/member");
-// const { createToken } = require("../../helpers/tokens");
+
 const memberNewSchema = require("../../schemas/members/memberNew.json");
 const memberUpdateSchema = require("../../schemas/members/memberUpdate.json");
-
 const router = new express.Router();
 
-
-
-/** POST / { member } =>  { member }
- *
- *
-   * data should be { familyId, firstName, lastName, birthday }
-   *
-   * Returns { id, familyId, firstName, lastName, birthday }
-   *
- *
- * Authorization required: admin or correct family id user
- */
-
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
-  async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, memberNewSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-
-    if(!req.body.birthday){
-      req.body.birthday = null;
-    }
-
-    const member = await Member.create(req.body);
-    return res.status(201).json({ member });
-  } catch (err) {
-    return next(err);
-  }
-});
-
-
-/** GET / => { members: [ {id, firstName, lastName, email }, ... ] }
- *
- * Returns list of all members.
- *
- * Authorization required: admin
- **/
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const members = await Member.findAll();
-      return res.json({ members });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
   /** GET /[id] => { member }
  *
  * 
  *
- * Authorization required: admin or same  family id-as-:id
+ * Authorization required: admin or :id is in res.locals.family.memberIds
  **/
 
   router.get("/:id", 
-    // ensureCorrectUserOrAdmin, 
+    ensureCorrectMemberOrAdmin, 
     async function (req, res, next) {
     try {
       const member = await Member.get(req.params.id);
@@ -85,7 +32,7 @@ router.get("/",
     }
   });
   
-/** GET /[member_id] => { allergies }
+/** GET /[id]/allergies => { allergies }
  *
  * Returns allergies: [{ id, member_id, name, reaction, notes }
    * 
@@ -93,7 +40,7 @@ router.get("/",
  **/
 
 router.get("/:id/allergies", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const allergies = await Member.getAllergies(req.params.id);
@@ -103,7 +50,7 @@ router.get("/:id/allergies",
   }
 });
 
-/** GET /[member_id] => { diagnoses }
+/** GET /[id]/diagnoses => { diagnoses }
  *
  * Returns diagnoses: [{ id, member_id, }
    * 
@@ -111,7 +58,7 @@ router.get("/:id/allergies",
  **/
 
 router.get("/:id/diagnoses", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const diagnoses = await Member.getDiagnoses(req.params.id);
@@ -122,7 +69,7 @@ router.get("/:id/diagnoses",
 });
 
 
-/** GET /[member_id] => { images }
+/** GET /[id]/images => { images }
  *
  * Returns images: [{  }]
    * 
@@ -130,7 +77,7 @@ router.get("/:id/diagnoses",
  **/
 
 router.get("/:id/images", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const images = await Member.getImages(req.params.id);
@@ -141,7 +88,7 @@ router.get("/:id/images",
 });
 
 
-/** GET /[member_id] => { doctors }
+/** GET /[id]/doctors => { doctors }
  *
  * Returns doctors: [{ }]
    * 
@@ -149,7 +96,7 @@ router.get("/:id/images",
  **/
 
 router.get("/:id/doctors", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const doctors = await Member.getDoctors(req.params.id);
@@ -160,7 +107,7 @@ router.get("/:id/doctors",
 });
 
 
-/** GET /[member_id] => { insurance }
+/** GET /[id]/insurance => { insurance }
  *
  * Returns insurance: [{ }]
    * 
@@ -168,7 +115,7 @@ router.get("/:id/doctors",
  **/
 
 router.get("/:id/insurance", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const insurance = await Member.getInsurance(req.params.id);
@@ -179,7 +126,7 @@ router.get("/:id/insurance",
 });
 
 
-/** GET /[member_id] => { meds }
+/** GET /[id]/meds => { meds }
  *
  * Returns meds: [{ }]
    * 
@@ -187,7 +134,7 @@ router.get("/:id/insurance",
  **/
 
 router.get("/:id/meds", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const meds = await Member.getMeds(req.params.id);
@@ -198,7 +145,7 @@ router.get("/:id/meds",
 });
 
 
-/** GET /[member_id] => { symptoms }
+/** GET /[id]/symptoms => { symptoms }
  *
  * Returns symptoms: [{ }]
    * 
@@ -206,7 +153,7 @@ router.get("/:id/meds",
  **/
 
 router.get("/:id/symptoms", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const symptoms = await Member.getSymptoms(req.params.id);
@@ -217,7 +164,7 @@ router.get("/:id/symptoms",
 });
 
 
-/** GET /[member_id] => { visits }
+/** GET /[id]/visits => { visits }
  *
  * Returns visits: [{ }]
    * 
@@ -225,7 +172,7 @@ router.get("/:id/symptoms",
  **/
 
 router.get("/:id/visits", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const visits = await Member.getVisits(req.params.id);
@@ -235,7 +182,7 @@ router.get("/:id/visits",
   }
 });
 
-/** GET /[member_id] => { goals }
+/** GET /[id]/goals => { goals }
  *
  * Returns goals: [{ }]
    * 
@@ -243,7 +190,7 @@ router.get("/:id/visits",
  **/
 
 router.get("/:id/goals", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const goals = await Member.getGoals(req.params.id);
@@ -266,7 +213,7 @@ router.get("/:id/goals",
  */
 
 router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, memberUpdateSchema);
@@ -286,11 +233,11 @@ router.patch("/:id",
 
 /** DELETE /[id]  =>  { deleted: id }
  *
- * Authorization: admin or correct user
+ * Authorization: admin or member from correct family
  */
 
 router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     await Member.remove(req.params.id);

@@ -5,19 +5,19 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
-const { BadRequestError } = require("../../expressError");
-const Image = require("../../models/images/image");
+const { ensureCorrectMemberOrAdmin } = require("../../../middleware/auth");
+const { BadRequestError } = require("../../../expressError");
+const Image = require("../../../models/images/image");
 // const { createToken } = require("../../helpers/tokens");
-const imageNewSchema = require("../../schemas/images/imageNew.json");
-const imageUpdateSchema = require("../../schemas/images/imageUpdate.json");
+const imageNewSchema = require("../../../schemas/images/imageNew.json");
+const imageUpdateSchema = require("../../../schemas/images/imageUpdate.json");
 
 const router = new express.Router();
 
-/** POST / { image } =>  { image }
+/** POST /[id]/images { image } =>  { image }
  *
  *
-   * data should be { memberId, path }
+   * data should be { path }
    *
    * Returns { id, memberId, path }
    *
@@ -25,8 +25,8 @@ const router = new express.Router();
  * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureCorrectUserOrAdmin, 
+router.post("/:id/images", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, imageNewSchema);
@@ -34,33 +34,13 @@ router.post("/",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-
-    const image = await Image.create(req.body);
+    const memberId = +req.params.id;
+    const image = await Image.create(req.body, memberId);
     return res.status(201).json({ image });
   } catch (err) {
     return next(err);
   }
 });
-
-
-/** GET / => { images: [ {id, member_id, path }, ... ] }
- *
- * Returns list of all images.
- *
- * Authorization required: admin
- **/
-
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const images = await Image.findAll();
-      return res.json({ images });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
  /** GET /[id] => { image }
  *
@@ -70,7 +50,7 @@ router.get("/",
  **/
 
  router.get("/:id", 
-  // ensureCorrectUserOrAdmin, 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const image = await Image.get(req.params.id);
@@ -92,8 +72,8 @@ router.get("/",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:id/images/:imageId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, imageUpdateSchema);
@@ -102,7 +82,10 @@ router.patch("/:id",
       throw new BadRequestError(errs);
     }
 
-    const image = await Image.update(req.params.id, req.body);
+    const memberId = +req.params.id;
+    const imageId = +req.params.imageId;
+
+    const image = await Image.update(req.body, imageId, memberId);
     return res.json({ image });
   } catch (err) {
     return next(err);
@@ -116,12 +99,15 @@ router.patch("/:id",
  * Authorization: admin or correct user
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:id/images/:imageId", 
+  ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Image.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const memberId = +req.params.id;
+    const imageId = +req.params.imageId;
+
+    let deletedImage = await Image.remove(imageId, memberId);
+    return res.json({ deleted: deletedImage.id });
   } catch (err) {
     return next(err);
   }

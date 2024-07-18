@@ -19,12 +19,12 @@ class Visit {
 
   /** Create a visit (from data), update db, return new visit data.
    *
-   * data should be { memberId, doctorId, title, date, description }
+   * data should be { doctorId, title, date, description }
   *
   * Returns { id, memberId, doctorId, title, date, description }
   *
    * */
-  static async create({ memberId, doctorId, title, date, description }) {
+  static async create({ doctorId, title, date, description }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -103,7 +103,21 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if not found.
    */
 
-static async update(id, data) {
+static async update(data, visitId, memberId) {
+  const visitRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM visits
+      WHERE id = $1`,
+      [visitId]);
+
+  const visitCheck = visitRes.rows[0];
+
+  //Check to see if visit exists by visitId in db
+  if (!visitCheck) throw new NotFoundError(`No visit: ${visitId}`);
+  //Confirm authorization: Check to see if memberId matches the visit member_id in db
+  if (visitCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const { setColumns, values } = sqlForPartialUpdate(data,{doctorId: "doctor_id"});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -120,10 +134,8 @@ static async update(id, data) {
                               date,
                               description`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, visitId]);
   const visit = result.rows[0];
-
-  if (!visit) throw new NotFoundError(`No visit: ${id}`);
 
   visit.date = formatDate(visit.date);
     
@@ -166,16 +178,30 @@ static async get(id) {
    * Throws NotFoundError if visit not found.
    **/
 
- static async remove(id) {
+ static async remove(visitId, memberId) {
+  const visitRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId"
+      FROM visits
+      WHERE id = $1`,
+      [visitId]);
+
+  const visitCheck = visitRes.rows[0];
+
+  //Check to see if visit exists by visitId in db
+  if (!visitCheck) throw new NotFoundError(`No visit: ${visitId}`);
+  //Confirm authorization: Check to see if memberId matches the visit member_id in db
+  if (visitCheck.memberId !== memberId) throw new UnauthorizedError();
+
   const result = await db.query(
         `DELETE
          FROM visits
          WHERE id = $1
          RETURNING id`,
-      [id]);
-  const visit = result.rows[0];
+      [visitId]);
+  const deletedVisit = result.rows[0];
 
-  if (!visit) throw new NotFoundError(`No visit: ${id}`);
+  return deletedVisit;
 }
 
  

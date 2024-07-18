@@ -5,72 +5,51 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../../middleware/auth");
+const { ensureCorrectFamilyOrAdmin } = require("../../middleware/auth");
 const { BadRequestError } = require("../../expressError");
 const Family = require("../../models/families/family");
+const Member = require("../../models/members/member");
 const { createToken } = require("../../helpers/tokens");
 const familyNewSchema = require("../../schemas/families/familyNew.json");
 const familyUpdateSchema = require("../../schemas/families/familyUpdate.json");
 const familyPasswordUpdateSchema = require("../../schemas/families/familyPasswordUpdate.json");
-
+const memberNewSchema = require("../../schemas/members/memberNew.json");
 const router = new express.Router();
 
-/** POST / { family } => { family, token }
+/** POST /familyId/members { member } =>  { member }
  *
- * Adds a new family. This is not the registration endpoint --- instead, this is
- * only for admin users to add new users/families. The new user being added can be an
- * admin.
  *
- * This returns the newly created user/family and an authentication token for them:
- *  {family: { id, email, name, isAdmin }, token }
+   * data should be { firstName, lastName, birthday }
+   *
+   * Returns { id, familyId, firstName, lastName, birthday }
+   *
  *
- * Authorization required: admin
- * 
- * family must include { email, password, name, isAdmin }
- *
- * Returns JWT token which can be used to authenticate further requests.
- *
- * Authorization required: admin
+ * Authorization required: admin or correct family id user
  */
 
-router.post("/", 
-  // ensureAdmin,
+router.post("/:familyId/members", 
+  ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, familyNewSchema);
+    const validator = jsonschema.validate(req.body, memberNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const newFamily = await Family.register(req.body);
-    const token = createToken(newFamily);
-    return res.status(201).json({ newFamily, token });
+    if(!req.body.birthday){
+      req.body.birthday = null;
+    }
+    const familyId = +req.params.familyId;
+    const member = await Member.create(req.body, familyId);
+    return res.status(201).json({ member });
   } catch (err) {
     return next(err);
   }
 });
 
-
-/** GET / => { families: [ {username, firstName, lastName, email }, ... ] }
- *
- * Returns list of all users.
- *
- * Authorization required: admin
- **/
-
-router.get("/", 
-    // ensureAdmin, 
-    async function (req, res, next) {
-    try {
-      const families = await Family.findAll();
-      return res.json({ families });
-    } catch (err) {
-      return next(err);
-    }
-  });
   
-  /** GET /[id] => { family }
+  /** GET /[familyId] => { family }
  *
  * Returns { id, email, name, is_admin, family_members }
    *   where family_member is { id, first_name, last_name }
@@ -78,11 +57,11 @@ router.get("/",
  * Authorization required: admin or same  family id-as-:id
  **/
 
-router.get("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.get("/:familyId", 
+  ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
-    const family = await Family.get(req.params.id);
+    const family = await Family.get(req.params.familyId);
     return res.json({ family });
   } catch (err) {
     return next(err);
@@ -91,7 +70,7 @@ router.get("/:id",
 
 
 
-/** PATCH /[id] { fld1, fld2, ... } => { family }
+/** PATCH /[familyId] { fld1, fld2, ... } => { family }
  *
  * Patches family data.
  *
@@ -102,8 +81,8 @@ router.get("/:id",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:familyId", 
+  ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, familyUpdateSchema);
@@ -112,16 +91,16 @@ router.patch("/:id",
       throw new BadRequestError(errs);
     }
 
-    const family = await Family.update(req.params.id, req.body);
+    const family = await Family.update(req.params.familyId, req.body);
     return res.json({ family });
   } catch (err) {
     return next(err);
   }
 });
 
-/** PATCH /[id]/password { fld1, fld2, ... } => { family }
+/** PATCH /[familyId]/password { fld1, fld2, ... } => { family }
  *
- * Patches family data.
+ * Patches family password.
  *
  * fields can be: { password }
  *
@@ -130,8 +109,8 @@ router.patch("/:id",
  * Authorization required: admin or correct user
  */
 
-router.patch("/:id/password", 
-  // ensureCorrectUserOrAdmin, 
+router.patch("/:familyId/password", 
+  ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, familyPasswordUpdateSchema);
@@ -140,7 +119,7 @@ router.patch("/:id/password",
       throw new BadRequestError(errs);
     }
 
-    const family = await Family.updatePassword(req.params.id, req.body);
+    const family = await Family.updatePassword(req.params.familyId, req.body);
     return res.json({ family });
   } catch (err) {
     return next(err);
@@ -150,17 +129,17 @@ router.patch("/:id/password",
 
 
 
-/** DELETE /[id]  =>  { deleted: id }
+/** DELETE /[familyId]  =>  { deleted: familyId }
  *
- * Authorization: admin or correct user
+ * Authorization: admin or correct family
  */
 
-router.delete("/:id", 
-  // ensureCorrectUserOrAdmin, 
+router.delete("/:familyId", 
+  ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
-    await Family.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    await Family.remove(req.params.familyId);
+    return res.json({ deleted: req.params.familyId });
   } catch (err) {
     return next(err);
   }

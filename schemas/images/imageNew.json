@@ -5,18 +5,10 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "memberId",
         "path"
     ],
     "additionalProperties": false,
     "properties": {
-        "memberId": {
-            "type": "integer",
-            "title": "The memberId Schema",
-            "examples": [
-                3
-            ]
-        },
         "path": {
             "type": "string",
             "title": "The path Schema",
@@ -26,7 +18,6 @@
         }
     },
     "examples": [{
-        "memberId": 3,
         "path": "this/is/the/path/to/the/image/you/need"
     }]
 }

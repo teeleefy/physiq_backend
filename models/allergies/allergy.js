@@ -18,12 +18,12 @@ class Allergy {
 
   /** Create a allergy (from data), update db, return new allergy data.
    *
-   *data should be { memberId, name, reaction, notes }
+   *data should be { name, reaction, notes }
    *
    * Returns { id, memberId, name, reaction, notes }
    *
    * */
-  static async create({ memberId, name, reaction, notes }) {
+  static async create({ name, reaction, notes }, memberId) {
     const memberIdCheck = await db.query(
       `SELECT id, 
         first_name AS "firstName"
@@ -114,7 +114,25 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if not found.
    */
 
- static async update(id, data) {
+ static async update(data, allergyId, memberId) {
+  const allergyRes = await db.query(
+    `SELECT id,
+            member_id AS "memberId",
+            name,
+            reaction,
+            notes
+    FROM allergies
+    WHERE id = $1`,
+  [allergyId]);
+
+  const allergy = allergyRes.rows[0];
+
+  //Check to see if allergy exists by allergyId in db
+  if (!allergy) throw new NotFoundError(`No allergy: ${allergyId}`);
+  //Confirm authorization: Check to see if memberId matches the allergy's member_id in db
+  if (allergy.memberId !== memberId) throw new UnauthorizedError();
+
+
   const { setColumns, values } = sqlForPartialUpdate(data,{});
 
   /*'id' will be added to the end of the values and passed into the end of the db query as an array, 
@@ -130,12 +148,10 @@ if (!memberIdCheck.rows[0])
                               reaction,
                               notes`;
   
-  const result = await db.query(sqlQuery, [...values, id]);
-  const allergy = result.rows[0];
+  const result = await db.query(sqlQuery, [...values, allergyId]);
+  const updatedAllergy = result.rows[0];
 
-  if (!allergy) throw new NotFoundError(`No allergy: ${id}`);
-
-  return allergy;
+  return updatedAllergy;
 }
 
 
@@ -144,16 +160,34 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if allergy not found.
    **/
 
-   static async remove(id) {
-    const result = await db.query(
-          `DELETE
-           FROM allergies
-           WHERE id = $1
-           RETURNING id`,
-        [id]);
-    const allergy = result.rows[0];
+   static async remove(allergyId, memberId) {
+      const allergyRes = await db.query(
+        `SELECT id,
+                member_id AS "memberId",
+                name,
+                reaction,
+                notes
+        FROM allergies
+        WHERE id = $1`,
+      [allergyId]);
 
-    if (!allergy) throw new NotFoundError(`No allergy: ${id}`);
+      const allergy = allergyRes.rows[0];
+
+      //Check to see if allergy exists by allergyId in db
+      if (!allergy) throw new NotFoundError(`No allergy: ${allergyId}`);
+      //Confirm authorization: Check to see if memberId matches the allergy's member_id in db
+      if (allergy.memberId !== memberId) throw new UnauthorizedError();
+
+      const result = await db.query(
+            `DELETE
+            FROM allergies
+            WHERE id = $1
+            RETURNING id`,
+          [allergyId]);
+      
+      const deletedAllergy = result.rows[0];
+
+      return deletedAllergy;
   }
 
 

@@ -9,19 +9,26 @@ const { NotFoundError } = require("./expressError");
 const { authenticateJWT } = require("./middleware/auth.js");
 
 //CONNECT TO ROUTES FILES
+// Families Route: /families 
 const familiesRoutes = require("./routes/families/families");
-const authRoutes = require("./routes/auth/auth");
-const membersRoutes = require("./routes/members/members");
-const allergiesRoutes = require("./routes/allergies/allergies");
-const diagnosesRoutes = require("./routes/diagnoses/diagnoses");
-const doctorsRoutes = require("./routes/doctors/doctors");
-const goalsRoutes = require("./routes/goals/goals");
-const imagesRoutes = require("./routes/images/images");
-const insuranceRoutes = require("./routes/insurance/insurance");
-const medsRoutes = require("./routes/meds/meds");
-const symptomsRoutes = require("./routes/symptoms/symptoms");
-const visitsRoutes = require("./routes/visits/visits");
 
+// Auth Route: /auth 
+const authRoutes = require("./routes/auth/auth");
+
+// Members Route: /members 
+const membersRoutes = require("./routes/members/members");
+const membersAllergyRoutes = require("./routes/members/allergies/allergies.js");
+const membersDiagnosisRoutes = require("./routes/members/diagnoses/diagnoses.js");
+const membersDoctorRoutes = require("./routes/members/doctors/doctors.js");
+const membersGoalRoutes = require("./routes/members/goals/goals.js");
+const membersImageRoutes = require("./routes/members/images/images.js");
+const membersInsuranceRoutes = require("./routes/members/insurance/insurance.js");
+const membersMedRoutes = require("./routes/members/meds/meds.js");
+const membersSymptomRoutes = require("./routes/members/symptoms/symptoms.js");
+const membersVisitRoutes = require("./routes/members/visits/visits.js");
+
+// Admin Route: /admin
+const adminRoutes = require("./routes/admin/admin");
 
 //CONNECT TO MORGAN LIBRARY FOR DETAILED BACKEND INFORMATION
 const morgan = require("morgan");
@@ -40,16 +47,27 @@ app.use(authenticateJWT);
 
 app.use("/families", familiesRoutes);
 app.use("/auth", authRoutes);
-app.use("/members", membersRoutes);
-app.use("/allergies", allergiesRoutes);
-app.use("/diagnoses", diagnosesRoutes);
-app.use("/doctors", doctorsRoutes);
-app.use("/goals", goalsRoutes);
-app.use("/images", imagesRoutes);
-app.use("/insurance", insuranceRoutes);
-app.use("/meds", medsRoutes);
-app.use("/symptoms", symptomsRoutes);
-app.use("/visits", visitsRoutes);
+
+
+//GET /MEMBERS ROUTES
+app.use("/members", 
+      membersRoutes, 
+      membersAllergyRoutes, 
+      membersDiagnosisRoutes,
+      membersDoctorRoutes,
+      membersGoalRoutes,
+      membersImageRoutes,
+      membersInsuranceRoutes,
+      membersMedRoutes,
+      membersSymptomRoutes,
+      membersVisitRoutes,
+    );
+
+//admin routes
+app.use("/admin", adminRoutes);
+// app.use("/allergies", allergiesRoutes);
+
+
 
 
 /** Handle 404 errors -- this matches everything */

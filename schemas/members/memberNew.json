@@ -5,19 +5,11 @@
     "default": {},
     "title": "Root Schema",
     "required": [
-        "familyId",
         "firstName",
         "lastName"
     ],
     "additionalProperties": false,
     "properties": {
-        "familyId": {
-            "type": "integer",
-            "title": "The familyId Schema",
-            "examples": [
-                3
-            ]
-        },
         "firstName": {
             "type": "string",
             "title": "The firstName Schema",
@@ -46,7 +38,6 @@
         }
     },
     "examples": [{
-        "familyId": 3,
         "firstName": "John",
         "lastName": "Smith",
         "birthday": "2010-01-01"

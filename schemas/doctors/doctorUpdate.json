@@ -27,7 +27,6 @@
         },
         "clinic": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 50,
             "title": "The clinic Schema",
             "examples": [
@@ -36,7 +35,6 @@
         },
         "address": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 100,
             "title": "The address Schema",
             "examples": [
@@ -45,7 +43,6 @@
         },
         "phone": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 25,
             "title": "The phone Schema",
             "examples": [
@@ -54,7 +51,6 @@
         },
         "notes": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 250,
             "title": "The notes Schema",
             "examples": [

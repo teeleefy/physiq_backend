@@ -27,7 +27,6 @@
         },
         "notes": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 250,
             "title": "The notes Schema",
             "examples": [

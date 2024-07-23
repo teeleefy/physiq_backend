@@ -60,7 +60,6 @@
         },
         "insuredName": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 75,
             "title": "The insuredName Schema",
             "examples": [
@@ -69,7 +68,6 @@
         },
         "groupNum": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 25,
             "title": "The groupNum Schema",
             "examples": [
@@ -78,7 +76,6 @@
         },
         "contractNum": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 25,
             "title": "The contractNum Schema",
             "examples": [
@@ -87,7 +84,6 @@
         },
         "notes": {
             "type": "string",
-            "minLength": 2,
             "maxLength": 250,
             "title": "The notes Schema",
             "examples": [

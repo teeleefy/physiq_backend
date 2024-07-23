@@ -63,6 +63,7 @@ if (!memberIdCheck.rows[0])
   }
 
 
+
    /** Find all visits.
    *
    * Returns [{ id, memberId, doctorId, title, date, description}, ...]
@@ -90,6 +91,39 @@ if (!memberIdCheck.rows[0])
 
     return visits;
   }
+
+/** Given an id, return data about a visit.
+   *
+   * Returns { }
+   *
+   * Throws NotFoundError if visit not found.
+   **/
+
+static async get(visitId, memberId) {
+  const result = await db.query(
+        `SELECT id,
+                member_id AS "memberId",
+                doctor_id AS "doctorId",
+                title,
+                date,
+                description
+        FROM visits
+        WHERE id = $1
+        ORDER BY id`,
+      [visitId],
+  );
+
+  const visit = result.rows[0];
+
+  //Check to see if visit exists by visitId in db
+  if (!visit) throw new NotFoundError(`No visit: ${visitId}`);
+  //Confirm authorization: Check to see if memberId matches the visit member_id in db
+  if (visit.memberId !== memberId) throw new UnauthorizedError();
+
+  visit.date = formatDate(visit.date);
+  
+  return visit;
+}
 
 /** Update visit data with `data`.
    *
@@ -143,35 +177,6 @@ static async update(data, visitId, memberId) {
 }
 
 
-/** Given an id, return data about a visit.
-   *
-   * Returns { }
-   *
-   * Throws NotFoundError if visit not found.
-   **/
-
-static async get(id) {
-    const result = await db.query(
-          `SELECT id,
-                  member_id AS "memberId",
-                  doctor_id AS "doctorId",
-                  title,
-                  date,
-                  description
-           FROM visits
-           WHERE id = $1
-           ORDER BY id`,
-        [id],
-    );
-
-    const visit = result.rows[0];
-
-    if (!visit) throw new NotFoundError(`No visit: ${id}`);
-
-    visit.date = formatDate(visit.date);
-    
-    return visit;
-  }
 
  /** Delete given visit from database; returns undefined.
    *

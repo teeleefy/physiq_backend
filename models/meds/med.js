@@ -112,7 +112,7 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if med not found.
    **/
 
-static async get(id) {
+static async get(medId, memberId) {
     const result = await db.query(
           `SELECT id,
                   member_id AS "memberId", 
@@ -126,13 +126,17 @@ static async get(id) {
            FROM meds
            WHERE id = $1
            ORDER BY id`,
-        [id],
+        [medId],
     );
 
     const med = result.rows[0];
 
-    if (!med) throw new NotFoundError(`No med: ${id}`);
+    //Check to see if med exists by medId in db
+    if (!med) throw new NotFoundError(`No med: ${medId}`);
+    //Confirm authorization: Check to see if memberId matches the med member_id in db
+    if (med.memberId !== memberId) throw new UnauthorizedError();
 
+    
     med.startDate = formatDate(med.startDate);
     med.endDate = formatDate(med.endDate);
     

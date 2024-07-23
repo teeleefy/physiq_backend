@@ -68,16 +68,19 @@ router.post("/:id/meds",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-// router.get("/:id", 
-//     ensureCorrectMemberOrAdmin, 
-//     async function (req, res, next) {
-//     try {
-//       const meds = await Med.get(req.params.id);
-//       return res.json({ meds });
-//     } catch (err) {
-//       return next(err);
-//     }
-//   });
+router.get("/:id/meds/:medId", 
+    ensureCorrectMemberOrAdmin, 
+    async function (req, res, next) {
+    try {
+      const memberId = +req.params.id;
+      const medId = +req.params.medId;
+
+      const med = await Med.get(medId, memberId);
+      return res.json({ med });
+    } catch (err) {
+      return next(err);
+    }
+  });
   
 
 

@@ -77,19 +77,22 @@ throw new BadRequestError(`No existing member: ${memberId}`);
    * Throws NotFoundError if image not found.
    **/
 
-  static async get(id) {
+  static async get(imageId, memberId) {
     const result = await db.query(
           `SELECT id,
-                  member_id,
+                  member_id AS "memberId",
                   path
            FROM images
            WHERE id = $1`,
-        [id],
+        [imageId],
     );
 
     const image = result.rows[0];
 
-    if (!image) throw new NotFoundError(`No image: ${id}`);
+    //Check to see if image exists by imageId in db
+    if (!image) throw new NotFoundError(`No image: ${imageId}`);
+    //Confirm authorization: Check to see if memberId matches the image member_id in db
+    if (image.memberId !== memberId) throw new UnauthorizedError();
 
     return image;
   }

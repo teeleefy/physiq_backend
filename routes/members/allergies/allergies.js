@@ -56,16 +56,19 @@ router.post("/:id/allergies",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-// router.get("/:id/allergies/:allergyId", 
-//   // ensureCorrectUserOrAdmin, 
-//   async function (req, res, next) {
-//   try {
-//     const allergy = await Allergy.get(req.params.allergyId, req.parmas.id);
-//     return res.json({ allergy });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.get("/:id/allergies/:allergyId", 
+  ensureCorrectMemberOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const memberId = +req.params.id;
+    const allergyId = +req.params.allergyId;
+
+    const allergy = await Allergy.get(allergyId, memberId);
+    return res.json({ allergy });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 /** PATCH /[id] { fld1, fld2, ... } => { allergy }

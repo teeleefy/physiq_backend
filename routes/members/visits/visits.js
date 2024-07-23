@@ -61,16 +61,18 @@ router.post("/:id/visits",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-// router.get("/:id", 
-//     ensureCorrectMemberOrAdmin, 
-//     async function (req, res, next) {
-//     try {
-//       const visit = await Visit.get(req.params.id);
-//       return res.json({ visit });
-//     } catch (err) {
-//       return next(err);
-//     }
-//   });
+router.get("/:id/visits/:visitId", 
+    ensureCorrectMemberOrAdmin, 
+    async function (req, res, next) {
+    try {
+      const memberId = +req.params.id;
+      const visitId = +req.params.visitId;
+      const visit = await Visit.get(visitId, memberId);
+      return res.json({ visit });
+    } catch (err) {
+      return next(err);
+    }
+  });
   
   
 

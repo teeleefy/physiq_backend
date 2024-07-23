@@ -98,7 +98,7 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if symptom not found.
    **/
 
-static async get(id) {
+static async get(symptomId, memberId) {
     const result = await db.query(
           `SELECT id,
                   member_id AS "memberId",
@@ -109,12 +109,15 @@ static async get(id) {
            FROM symptoms
            WHERE id = $1
            ORDER BY id`,
-        [id],
+        [symptomId],
     );
 
     const symptom = result.rows[0];
 
-    if (!symptom) throw new NotFoundError(`No symptom: ${id}`);
+    //Check to see if symptom exists by symptomId in db
+    if (!symptom) throw new NotFoundError(`No symptom: ${symptomId}`);
+    //Confirm authorization: Check to see if memberId matches the symptom member_id in db
+    if (symptom.memberId !== memberId) throw new UnauthorizedError();
 
     symptom.startDate = formatDate(symptom.startDate);
     symptom.endDate = formatDate(symptom.endDate);

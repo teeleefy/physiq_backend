@@ -125,7 +125,7 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if insurance not found.
    **/
 
-static async get(id) {
+static async get(insuranceId, memberId) {
     const result = await db.query(
           `SELECT id,
                   member_id AS "memberId",
@@ -141,12 +141,15 @@ static async get(id) {
                   back_image_id AS "backImageId"
            FROM insurance
            WHERE id = $1`,
-        [id],
+        [insuranceId],
     );
 
     const insurance = result.rows[0];
 
-    if (!insurance) throw new NotFoundError(`No insurance: ${id}`);
+    //Check to see if insurance exists by insuranceId in db
+    if (!insurance) throw new NotFoundError(`No insurance: ${insuranceId}`);
+    //Confirm authorization: Check to see if memberId matches the insurance member_id in db
+    if (insurance.memberId !== memberId) throw new UnauthorizedError();
 
     insurance.startDate = formatDate(insurance.startDate);
     insurance.endDate = formatDate(insurance.endDate);

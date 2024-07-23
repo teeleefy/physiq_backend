@@ -90,7 +90,7 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if diagnoses not found.
    **/
 
-  static async get(id) {
+  static async get(diagnosisId, memberId) {
     const diagnosisRes = await db.query(
           `SELECT id,
                   member_id AS "memberId",
@@ -99,12 +99,16 @@ if (!memberIdCheck.rows[0])
                   notes
            FROM diagnoses
            WHERE id = $1`,
-        [id],
+        [diagnosisId],
     );
 
     const diagnosis = diagnosisRes.rows[0];
 
-    if (!diagnosis) throw new NotFoundError(`No diagnosis: ${id}`);
+    //Check to see if diagnosis exists by diagnosisId in db
+  if (!diagnosis) throw new NotFoundError(`No diagnosis: ${diagnosisId}`);
+  //Confirm authorization: Check to see if memberId matches the diagnosis member_id in db
+  if (diagnosis.memberId !== memberId) throw new UnauthorizedError();
+
 
     diagnosis.dateReceived = formatDate(diagnosis.dateReceived);
     

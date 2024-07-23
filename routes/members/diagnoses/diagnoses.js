@@ -58,16 +58,19 @@ router.post("/:id/diagnoses",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-// router.get("/:id", 
-//   ensureCorrectMemberOrAdmin, 
-//   async function (req, res, next) {
-//   try {
-//     const diagnosis = await Diagnosis.get(req.params.id);
-//     return res.json({ diagnosis });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.get("/:id/diagnoses/:diagnosisId", 
+  ensureCorrectMemberOrAdmin, 
+  async function (req, res, next) {
+  try {
+    const memberId = +req.params.id;
+    const diagnosisId = +req.params.diagnosisId;
+
+    const diagnosis = await Diagnosis.get(diagnosisId, memberId);
+    return res.json({ diagnosis });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 /** PATCH /[id] { fld1, fld2, ... } => { diagnosis }

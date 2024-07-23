@@ -83,22 +83,25 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if family not found.
    **/
 
-  static async get(id) {
-    const allergyRes = await db.query(
-          `SELECT id,
-                  member_id AS "memberId",
-                  name,
-                  reaction,
-                  notes
-           FROM allergies
-           WHERE id = $1`,
-        [id]);
+  static async get(allergyId, memberId) {
+      const allergyRes = await db.query(
+            `SELECT id,
+                    member_id AS "memberId",
+                    name,
+                    reaction,
+                    notes
+            FROM allergies
+            WHERE id = $1`,
+          [allergyId]);
 
-    const allergy = allergyRes.rows[0];
+      const allergy = allergyRes.rows[0];
 
-    if (!allergy) throw new NotFoundError(`No allergy id: ${id}`);
+      //Check to see if allergy exists by allergyId in db
+      if (!allergy) throw new NotFoundError(`No allergy: ${allergyId}`);
+      //Confirm authorization: Check to see if memberId matches the allergy's member_id in db
+      if (allergy.memberId !== memberId) throw new UnauthorizedError();
 
-    return allergy;
+      return allergy;
   }
 
 

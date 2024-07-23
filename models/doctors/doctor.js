@@ -86,7 +86,7 @@ class Doctor {
    * Throws NotFoundError if doctor not found.
    **/
 
-  static async get(id) {
+  static async get(doctorId, memberId) {
     const doctorRes = await db.query(
           `SELECT id,
                   member_id AS "memberId",
@@ -98,12 +98,15 @@ class Doctor {
                   notes
            FROM doctors
            WHERE id = $1`,
-        [id],
+        [doctorId],
     );
 
     const doctor = doctorRes.rows[0];
 
-    if (!doctor) throw new NotFoundError(`No doctor: ${id}`);
+    //Check to see if doctor exists by doctorId in db
+    if (!doctor) throw new NotFoundError(`No doctor: ${doctorId}`);
+    //Confirm authorization: Check to see if memberId matches the doctor member_id in db
+    if (doctor.memberId !== memberId) throw new UnauthorizedError();
 
     return doctor;
   }

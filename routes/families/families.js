@@ -138,8 +138,8 @@ router.delete("/:familyId",
   ensureCorrectFamilyOrAdmin, 
   async function (req, res, next) {
   try {
-    await Family.remove(req.params.familyId);
-    return res.json({ deleted: req.params.familyId });
+    let deletedFamily = await Family.remove(req.params.familyId);
+    return res.json({ deleted: deletedFamily.id });
   } catch (err) {
     return next(err);
   }

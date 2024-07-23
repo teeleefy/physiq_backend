@@ -249,6 +249,7 @@ static async updatePassword(id, {password}) {
   const family = result.rows[0];
 
   if (!family) throw new NotFoundError(`No family: ${id}`);
+  return family;
 }
 
 }

@@ -75,16 +75,16 @@ router.post("/:id/insurance",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-router.get("/:id", 
-    ensureCorrectMemberOrAdmin, 
-    async function (req, res, next) {
-    try {
-      const insurance = await Insurance.get(req.params.id);
-      return res.json({ insurance });
-    } catch (err) {
-      return next(err);
-    }
-  });
+// router.get("/:id", 
+//     ensureCorrectMemberOrAdmin, 
+//     async function (req, res, next) {
+//     try {
+//       const insurance = await Insurance.get(req.params.id);
+//       return res.json({ insurance });
+//     } catch (err) {
+//       return next(err);
+//     }
+//   });
   
 
 /** PATCH /[id] { fld1, fld2, ... } => { insurance }

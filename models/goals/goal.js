@@ -84,7 +84,21 @@ if (!memberIdCheck.rows[0])
    * Throws NotFoundError if family not found.
    **/
 
-  static async get(id) {
+  static async get(goalId, memberId) {
+    const result = await db.query(
+      `SELECT id,
+              member_id AS "memberId"
+        FROM goals
+        WHERE id = $1`,
+        [goalId]);
+  
+    const goalCheck = result.rows[0];
+  
+    //Check to see if goal exists by goalId in db
+    if (!goalCheck) throw new NotFoundError(`No goal: ${goalId}`);
+    //Confirm authorization: Check to see if memberId matches the goal member_id in db
+    if (goalCheck.memberId !== memberId) throw new UnauthorizedError();
+
     const goalRes = await db.query(
           `SELECT id,
                   member_id AS "memberId",
@@ -92,12 +106,10 @@ if (!memberIdCheck.rows[0])
                   goal_details AS "goalDetails"
            FROM goals
            WHERE id = $1`,
-        [id],
+        [goalId],
     );
 
     const goal = goalRes.rows[0];
-
-    if (!goal) throw new NotFoundError(`No goal: ${id}`);
 
     return goal;
   }

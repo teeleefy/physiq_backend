@@ -49,16 +49,16 @@ router.post("/:id/images",
  * Authorization required: admin or same  family id-as-:id
  **/
 
- router.get("/:id", 
-  ensureCorrectMemberOrAdmin, 
-  async function (req, res, next) {
-  try {
-    const image = await Image.get(req.params.id);
-    return res.json({ image });
-  } catch (err) {
-    return next(err);
-  }
-});
+//  router.get("/:id", 
+//   ensureCorrectMemberOrAdmin, 
+//   async function (req, res, next) {
+//   try {
+//     const image = await Image.get(req.params.id);
+//     return res.json({ image });
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 
 /** PATCH /[id] { fld1, fld2, ... } => { image }

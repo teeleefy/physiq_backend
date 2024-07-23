@@ -240,8 +240,8 @@ router.delete("/:id",
   ensureCorrectMemberOrAdmin, 
   async function (req, res, next) {
   try {
-    await Member.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    let deletedMember = await Member.remove(req.params.id);
+    return res.json({ deleted: deletedMember.id });
   } catch (err) {
     return next(err);
   }

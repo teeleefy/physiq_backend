@@ -54,11 +54,15 @@ router.post("/:id/goals",
  * Authorization required: admin or same  family id-as-:id
  **/
 
- router.get("/:id", 
+ router.get("/:id/goals/:goalId", 
     ensureCorrectMemberOrAdmin, 
     async function (req, res, next) {
     try {
-      const goal = await Goal.get(req.params.id);
+      const memberId = +req.params.id;
+      const goalId = +req.params.goalId;
+
+
+      const goal = await Goal.get(goalId, memberId);
       return res.json({ goal });
     } catch (err) {
       return next(err);

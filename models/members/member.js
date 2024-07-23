@@ -434,9 +434,10 @@ static async update(id, data) {
          WHERE id = $1
          RETURNING id`,
       [id]);
-  const member = result.rows[0];
+  const deletedMember = result.rows[0];
 
-  if (!member) throw new NotFoundError(`No member: ${id}`);
+  if (!deletedMember) throw new NotFoundError(`No member: ${id}`);
+  return deletedMember;
 }
 
 

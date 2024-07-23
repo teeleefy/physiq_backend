@@ -62,16 +62,16 @@ router.post("/:id/symptoms",
  * Authorization required: admin or same member_id in list of family_id members
  **/
 
-router.get("/:id", 
-    ensureCorrectMemberOrAdmin, 
-    async function (req, res, next) {
-    try {
-      const symptoms = await Symptom.get(req.params.id);
-      return res.json({ symptoms });
-    } catch (err) {
-      return next(err);
-    }
-  });
+// router.get("/:id", 
+//     ensureCorrectMemberOrAdmin, 
+//     async function (req, res, next) {
+//     try {
+//       const symptoms = await Symptom.get(req.params.id);
+//       return res.json({ symptoms });
+//     } catch (err) {
+//       return next(err);
+//     }
+//   });
 
 
 /** PATCH /[id] { fld1, fld2, ... } => { symptom }

@@ -96,6 +96,12 @@ router.patch("/:id/visits/:visitId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    if((req.body.date.length === 0) && (typeof req.body.date === "string")){
+      req.body.date = null;
+    }
+    if(req.body.doctorId === "-1"){
+      req.body.doctorId = null;
+    }
     const memberId = +req.params.id;
     const visitId = +req.params.visitId;
     const visit = await Visit.update(req.body, visitId, memberId);

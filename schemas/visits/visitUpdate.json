@@ -8,7 +8,7 @@
     "additionalProperties": false,
     "properties": {
         "doctorId": {
-            "type": "integer",
+            "type": ["integer", "string"],
             "title": "The doctorId Schema",
             "examples": [
                 8

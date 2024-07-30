@@ -221,7 +221,9 @@ router.patch("/:id",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-
+    if((req.body.birthday.length === 0) && (typeof req.body.birthday === "string")){
+      req.body.birthday = null;
+    }
     const member = await Member.update(req.params.id, req.body);
     return res.json({ member });
   } catch (err) {

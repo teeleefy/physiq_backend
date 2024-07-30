@@ -8,7 +8,7 @@
     "additionalProperties": false,
     "properties": {
         "prescriberId": {
-            "type": "integer",
+            "type": ["integer", "string"],
             "title": "The prescriberId Schema",
             "examples": [
                 8

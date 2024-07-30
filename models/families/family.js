@@ -147,7 +147,8 @@ class Family {
     const familyMembersRes = await db.query(
           `SELECT id, 
                   first_name AS "firstName", 
-                  last_name AS "lastName"
+                  last_name AS "lastName",
+                  birthday
            FROM family_members
            WHERE family_id = $1`, [family.id]);
 

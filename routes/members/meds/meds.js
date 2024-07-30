@@ -104,6 +104,16 @@ router.patch("/:id/meds/:medId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+  
+    if((req.body.startDate.length === 0) && (typeof req.body.startDate === "string")){
+      req.body.startDate = null;
+    }
+    if((req.body.endDate.length === 0) && (typeof req.body.endDate === "string")){
+      req.body.endDate = null;
+    }
+    if(req.body.prescriberId === "-1"){
+      req.body.prescriberId = null;
+    }
     const memberId = +req.params.id;
     const medId = +req.params.medId;
     const med = await Med.update(req.body, medId, memberId);

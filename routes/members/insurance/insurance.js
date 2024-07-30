@@ -110,6 +110,13 @@ router.patch("/:id/insurance/:insuranceId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    console.log(req.body.startDate);
+      if((req.body.startDate.length === 0) && (typeof req.body.startDate === "string")){
+        req.body.startDate = null;
+      }
+      if((req.body.endDate.length === 0) && (typeof req.body.endDate === "string")){
+        req.body.endDate = null;
+      }
     const memberId = +req.params.id;
     const insuranceId = +req.params.insuranceId;
     const insurance = await Insurance.update(req.body, insuranceId, memberId);

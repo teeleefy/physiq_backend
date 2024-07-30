@@ -97,6 +97,12 @@ router.patch("/:id/symptoms/:symptomId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    if((req.body.startDate.length === 0) && (typeof req.body.startDate === "string")){
+      req.body.startDate = null;
+    }
+    if((req.body.endDate.length === 0) && (typeof req.body.endDate === "string")){
+      req.body.endDate = null;
+    }
     const memberId = +req.params.id;
     const symptomId = +req.params.symptomId;
     const symptom = await Symptom.update(req.body, symptomId, memberId);

@@ -93,6 +93,10 @@ router.patch("/:id/diagnoses/:diagnosisId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    if((req.body.dateReceived.length === 0) && (typeof req.body.dateReceived === "string")){
+      req.body.dateReceived = null;
+    }
+    
     const memberId = +req.params.id;
     const diagnosisId = +req.params.diagnosisId;
 

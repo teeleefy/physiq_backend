@@ -3,6 +3,7 @@
 const db = require("../../db");
 const bcrypt = require("bcrypt");
 const { sqlForPartialUpdate } = require("../../helpers/sql");
+const { formatDate } = require('../../helpers/formatDate.js')
 
 const {
   NotFoundError,
@@ -152,8 +153,14 @@ class Family {
            FROM family_members
            WHERE family_id = $1`, [family.id]);
 
+           const familyMembers = familyMembersRes.rows.map(member => ({
+            id: member.id,
+            firstName: member.firstName,
+            lastName: member.lastName,
+            birthday: formatDate(member.birthday)
+        }));
     
-    family.familyMembers = familyMembersRes.rows;
+    family.familyMembers = familyMembers;
     return family;
   }
 

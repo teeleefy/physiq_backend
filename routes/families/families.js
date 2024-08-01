@@ -63,6 +63,7 @@ router.get("/:familyId",
   try {
     const family = await Family.get(req.params.familyId);
     return res.json({ family });
+    // return res.json({ family });
   } catch (err) {
     return next(err);
   }

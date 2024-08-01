@@ -99,7 +99,7 @@ router.patch("/:id/visits/:visitId",
     if((req.body.date.length === 0) && (typeof req.body.date === "string")){
       req.body.date = null;
     }
-    if(req.body.doctorId === "-1"){
+    if(req.body.doctorId === "-1" || req.body.doctorId === -1){
       req.body.doctorId = null;
     }
     const memberId = +req.params.id;

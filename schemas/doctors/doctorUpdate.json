@@ -10,7 +10,7 @@
         "name": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 50,
+            "maxLength": 100,
             "title": "The name Schema",
             "examples": [
                 "Dr. Patel"
@@ -19,7 +19,7 @@
         "specialty": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 50,
+            "maxLength": 100,
             "title": "The specialty Schema",
             "examples": [
                 "Cardiology"
@@ -27,7 +27,7 @@
         },
         "clinic": {
             "type": "string",
-            "maxLength": 50,
+            "maxLength": 100,
             "title": "The clinic Schema",
             "examples": [
                 "Main Street Cardiology"

@@ -5,7 +5,7 @@
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
-
+const Family = require("../models/families/family");
 
 /** Middleware: Authenticate user.
  *
@@ -93,14 +93,16 @@ function ensureCorrectFamilyOrAdmin(req, res, next) {
 //  *  If not, raises Unauthorized.
 //  */
 
-function ensureCorrectMemberOrAdmin(req, res, next) {
+async function ensureCorrectMemberOrAdmin(req, res, next) {
   try {
     const family = res.locals.family;
     
     if (!(family && (family.isAdmin || family.memberIds.includes(+req.params.id)))) {
-      throw new UnauthorizedError();
+      const updatedFamily = await Family.get(family.familyId);
+      if(!(family && updatedFamily.memberIds.includes(+req.params.id))){
+        throw new UnauthorizedError();
+      }
     }
-    
     return next();
   } catch (err) {
     return next(err);

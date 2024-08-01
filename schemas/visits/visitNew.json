@@ -20,7 +20,7 @@
             "type": "string",
             "title": "The title Schema",
             "minLength": 2,
-            "maxLength": 50,
+            "maxLength": 100,
             "examples": [
                 "Yearly Check-up"
             ]

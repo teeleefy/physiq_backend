@@ -110,7 +110,6 @@ router.patch("/:id/insurance/:insuranceId",
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    console.log(req.body.startDate);
       if((req.body.startDate.length === 0) && (typeof req.body.startDate === "string")){
         req.body.startDate = null;
       }

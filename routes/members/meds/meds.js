@@ -111,7 +111,8 @@ router.patch("/:id/meds/:medId",
     if((req.body.endDate.length === 0) && (typeof req.body.endDate === "string")){
       req.body.endDate = null;
     }
-    if(req.body.prescriberId === "-1"){
+
+    if(req.body.prescriberId === "-1" || req.body.prescriberId === -1){
       req.body.prescriberId = null;
     }
     const memberId = +req.params.id;

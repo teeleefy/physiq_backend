@@ -99,8 +99,9 @@ class Family {
           isAdmin
         ],
     );
-
+    
     const family = result.rows[0];
+    family.memberIds = [];
     return family;
   }
 
@@ -152,6 +153,7 @@ class Family {
                   birthday
            FROM family_members
            WHERE family_id = $1`, [family.id]);
+    
 
            const familyMembers = familyMembersRes.rows.map(member => ({
             id: member.id,
@@ -159,7 +161,8 @@ class Family {
             lastName: member.lastName,
             birthday: formatDate(member.birthday)
         }));
-    
+    family.memberIds = [];
+    family.memberIds = familyMembersRes.rows.map(m => m.id);    
     family.familyMembers = familyMembers;
     return family;
   }
@@ -222,25 +225,46 @@ static async update(id, data) {
    * Throws NotFoundError if not found.
    */
 
-static async updatePassword(id, {password}) {
+static async updatePassword(id, {oldPassword, newPassword}) {
+  const res = await db.query(
+    `SELECT id,
+            password
+     FROM families
+     WHERE id = $1`,
+  [id],
+  );
 
-  const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-
-  const sqlQuery = `UPDATE families
-                    SET password = $1 
-                    WHERE id = $2 
-                    RETURNING id,
-                              email,
-                              name,
-                              is_admin AS "isAdmin"`;
-  
-  const result = await db.query(sqlQuery, [hashedPassword, id]);
-  const family = result.rows[0];
-
+  //Check if family exists...
+  const family = res.rows[0];
   if (!family) throw new NotFoundError(`No family: ${id}`);
 
-  return { id: `${family.id}`, passwordStatus: "updated"};
+  //Validate old password...compare hashed oldPassword to a new hash from password
+  if (family) {
+  const isValid = await bcrypt.compare(oldPassword, family.password);
+
+  //If oldPassword is valid... update family's password with hash from newPassword
+  if (isValid === true) {
+    const hashedNewPassword = await bcrypt.hash(newPassword, BCRYPT_WORK_FACTOR);
+
+    const sqlQuery = `UPDATE families
+                      SET password = $1 
+                      WHERE id = $2 
+                      RETURNING id,
+                                email,
+                                name,
+                                is_admin AS "isAdmin"`;
+    
+    const result = await db.query(sqlQuery, [hashedNewPassword, id]);
+    const updatedFamily = result.rows[0];
+
+    return updatedFamily;
+    }
+
+  throw new UnauthorizedError("Invalid password");
+  }
 }
+  
+
 
  /** Delete given family from database; returns undefined.
    *

@@ -16,7 +16,7 @@
             "default": "Our Family",
             "title": "The name Schema",
             "minLength": 1,
-            "maxLength": 50,
+            "maxLength": 75,
             "examples": [
                 "The Smith Family"
             ]

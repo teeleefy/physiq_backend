@@ -49,7 +49,7 @@
         "companyName": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 50,
+            "maxLength": 100,
             "title": "The companyName Schema",
             "examples": [
                 "BCBS"
@@ -57,7 +57,7 @@
         },
         "insuredName": {
             "type": "string",
-            "maxLength": 75,
+            "maxLength": 100,
             "title": "The insuredName Schema",
             "examples": [
                 "John J. Smith"

@@ -16,4 +16,4 @@ CREATE DATABASE physiq_test;
 \connect physiq_test
 
 \i physiq-schema.sql
-\i physiq-seed.sql
+-- \i physiq-seed.sql

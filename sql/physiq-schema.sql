@@ -60,7 +60,7 @@ CREATE TABLE visits (
     id SERIAL PRIMARY KEY,
     member_id INTEGER NOT NULL
         REFERENCES family_members ON DELETE CASCADE,
-    doctor_id INTEGER REFERENCES doctors ON DELETE CASCADE,
+    doctor_id INTEGER REFERENCES doctors,
     title VARCHAR(100) NOT NULL,
     date DATE,
     description VARCHAR (250)
@@ -70,7 +70,7 @@ CREATE TABLE meds (
     id SERIAL PRIMARY KEY,
     member_id INTEGER NOT NULL
         REFERENCES family_members ON DELETE CASCADE,
-    prescriber_id INTEGER REFERENCES doctors ON DELETE CASCADE,
+    prescriber_id INTEGER REFERENCES doctors,
     name VARCHAR(100) NOT NULL,
     start_date DATE,
     end_date DATE,

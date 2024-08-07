@@ -25,7 +25,7 @@ should be installed as one of your project's `dependencies.`
 
 This app uses [postregreSQL][psql] to establish its database. For local deployment, this should be installed locally. 
 
-*If you would like to run tests on the back-end portion of this app, [jest][jest] should be installed as one of your back-end `dependencies.` The front-end uses vitest for testing, which is already listed in the front-end `dependencies.`*
+*If you would like to run tests on the back-end portion of this app, [jest][jest] should be installed as one of your back-end `dependencies.` The front-end uses [vitest][vitest] for testing, which is already listed in the front-end `dependencies.`*
 
 
 ## Back-end Installation
@@ -123,3 +123,4 @@ VITE_APP_BASE_URL="customized_back_end_connection_url"
 [db-schema]: https://lucid.app/lucidspark/62bef30b-557d-420c-9762-e2f305c509da/edit?viewport_loc=-2003%2C-341%2C2560%2C1279%2C0_0&invitationId=inv_a7bab510-ec4c-4f2b-b1b3-1ac94f01fc20
 [home-sitemap]: https://lucid.app/lucidspark/309223a3-b399-49db-a549-f962ec7324bb/edit?viewport_loc=-2604%2C-614%2C5248%2C2792%2C0_0&invitationId=inv_4030a1ab-eac5-468b-9393-fc7f0a81ba9c
 [navbar-sitemap]:https://lucid.app/lucidspark/db3dcac5-edab-4e2c-9926-b26a88f40fe3/edit?viewport_loc=-2519%2C-994%2C8200%2C4363%2C0_0&invitationId=inv_40c6a11a-7611-4cd8-af0d-22fd7cb72fd4
+[vitest]: https://vitest.dev/

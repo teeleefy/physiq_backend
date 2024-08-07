@@ -1,3 +1,5 @@
+-- testfamily and testadmin passwords are "password"
+
 INSERT INTO families (name, email, password, is_admin) 
     VALUES ('testfamily', 
             'testfamily@user.com', 

@@ -115,7 +115,7 @@ VITE_APP_BASE_URL="customized_back_end_connection_url"
 [node]: https://nodejs.org
 [psql]: https://www.npmjs.com/package/postgres
 [jest]: https://www.npmjs.com/package/jest
-[config]: https://github.com/teeleefy/physiq_backend/blob/main/config.
+[config]: https://github.com/teeleefy/physiq_backend/blob/main/config.js
 [db]: https://github.com/teeleefy/physiq_backend/blob/main/db.js
 [vite]: https://vitejs.dev/
 [express]: https://expressjs.com/
